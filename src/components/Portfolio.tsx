@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { ArrowUpRight, X, ExternalLink } from 'lucide-react';
 
 type ProjectModalContent = {
@@ -174,12 +175,12 @@ export default function Portfolio() {
     };
   }, [selectedProject]);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
@@ -267,15 +268,6 @@ export default function Portfolio() {
           )}
         </div>
       )
-    );
-
-    const renderSeparator = () => (
-      <div className="pt-20 mt-12 border-t border-white/5 relative flex justify-center">
-        <div className="absolute -top-[1px] w-64 h-[1px] bg-gradient-to-r from-transparent via-[#ceab7a]/40 to-transparent"></div>
-        <div className="absolute -top-3 w-6 h-6 rounded-full bg-[#050505] border border-white/10 flex items-center justify-center">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#ceab7a]"></div>
-        </div>
-      </div>
     );
 
     const getCoverImage = (section: any) => {

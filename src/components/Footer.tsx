@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion';
-import { Mail, Globe, MessageSquare } from 'lucide-react';
+import type { Variants } from 'framer-motion';
+import { Mail, MessageSquare } from 'lucide-react';
 
 export default function Footer() {
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };

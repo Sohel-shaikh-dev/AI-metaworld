@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, ChangeEvent } from 'react';
+import React, { useState, useRef } from 'react';
+import type { ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Particle {
@@ -115,7 +116,7 @@ export function SparkleInput({ as: Component = 'input', onChange, onKeyDown, ...
     <div className="relative w-full">
       {/* @ts-ignore */}
       <Component
-        ref={inputRef}
+        ref={inputRef as any}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
         {...props}
