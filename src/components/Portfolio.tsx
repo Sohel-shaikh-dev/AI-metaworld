@@ -1,0 +1,673 @@
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowUpRight, X, ExternalLink } from 'lucide-react';
+
+type ProjectModalContent = {
+  // Common Fields
+  clientName?: string;
+  liveUrl?: string;
+  deliverables?: string[];
+  
+  // Website Design
+  heroLaptop?: string;
+  desktopScreens?: string[];
+  mobileScreens?: string[];
+  
+  // Branding & Identity
+  logos?: string[];
+  mockups?: string[];
+  
+  // AI Fashion Try-On
+  transformations?: { before: string; after: string }[];
+  
+  // Google Business Growth
+  metrics?: { label: string; value: string; trend?: string }[];
+  dashboards?: string[];
+  
+  // Print-On-Demand
+  products?: string[];
+};
+
+type Project = {
+  id: number;
+  type: 'website' | 'branding' | 'fashion' | 'growth' | 'pod';
+  category: string;
+  title: string;
+  desc: string;
+  image: string;
+  className: string;
+  modalContent: ProjectModalContent;
+};
+
+import { supabase } from '../lib/supabase';
+
+const defaultProjects: Project[] = [
+  {
+    id: 1,
+    type: 'website',
+    category: "Website Design",
+    title: "Website Design & Development",
+    desc: "High-performance modern website system designed for premium brand positioning and conversion-focused growth.",
+    image: "/Assets/p_website_new.png",
+    className: "md:col-span-2 md:row-span-2",
+    modalContent: {
+      clientName: "Aurelia Architectural",
+      liveUrl: "https://example.com",
+      deliverables: ["Custom UI/UX Design", "Responsive React Architecture", "CMS Integration", "Performance Optimization"],
+      heroLaptop: "/Assets/p_website_new.png",
+      desktopScreens: ["/Assets/p_website_new.png", "/Assets/p_website_new.png"],
+      mobileScreens: ["/Assets/p_website_new.png", "/Assets/p_website_new.png"]
+    }
+  },
+  {
+    id: 2,
+    type: 'branding',
+    category: "Branding",
+    title: "Branding & Logo Design",
+    desc: "Premium brand identity systems crafted to create strong, recognizable, and professional brand presence.",
+    image: "/Assets/p_branding_new.png",
+    className: "md:col-span-1 md:row-span-1",
+    modalContent: {
+      clientName: "Lumina Edge",
+      deliverables: ["Brand Identity Strategy", "Logo Suite", "Typography System", "Merchandise Mockups"],
+      logos: ["/Assets/p_branding_new.png", "/Assets/p_branding.png"],
+      mockups: ["/Assets/p_branding_new.png", "/Assets/p_branding.png", "/Assets/p_branding_new.png"]
+    }
+  },
+  {
+    id: 3,
+    type: 'fashion',
+    category: "AI Fashion",
+    title: "AI Fashion Try-On",
+    desc: "AI-powered visualization that transforms clothing products into realistic model previews for modern ecommerce brands.",
+    image: "/Assets/p_aifashion_new.png",
+    className: "md:col-span-1 md:row-span-1",
+    modalContent: {
+      clientName: "ThreadFlow AI",
+      deliverables: ["AI Model Generation", "Photorealistic Rendering", "Dynamic Lighting Match"],
+      transformations: [
+        { before: "/Assets/p_aifashion.png", after: "/Assets/p_aifashion_new.png" },
+        { before: "/Assets/p_aifashion.png", after: "/Assets/p_aifashion_new.png" }
+      ]
+    }
+  },
+  {
+    id: 4,
+    type: 'growth',
+    category: "Google Business",
+    title: "Google Business & Growth",
+    desc: "Google Business optimization systems designed to improve visibility, trust, rankings, and customer reach.",
+    image: "/Assets/p_google_new.png",
+    className: "md:col-span-2 md:row-span-1",
+    modalContent: {
+      clientName: "Elite Dentistry Group",
+      deliverables: ["Local SEO Optimization", "Review Management", "Keyword Targeting"],
+      metrics: [
+        { label: "Search Visibility", value: "+314%", trend: "up" },
+        { label: "Customer Calls", value: "245", trend: "up" },
+        { label: "5-Star Reviews", value: "85+", trend: "up" },
+        { label: "Map Ranking", value: "#1", trend: "up" }
+      ],
+      dashboards: ["/Assets/p_google_new.png", "/Assets/p_google.png"]
+    }
+  },
+  {
+    id: 5,
+    type: 'pod',
+    category: "Print-On-Demand",
+    title: "Print-On-Demand Solutions",
+    desc: "High-quality branded merchandise and custom print solutions designed for modern businesses and creators.",
+    image: "/Assets/p_print_new.png",
+    className: "md:col-span-1 md:row-span-1",
+    modalContent: {
+      clientName: "Street Culture Co.",
+      deliverables: ["Custom Apparel Design", "Packaging Systems", "Print File Optimization"],
+      products: ["/Assets/p_print_new.png", "/Assets/p_print.png", "/Assets/p_print_new.png", "/Assets/p_print.png"]
+    }
+  }
+];
+
+export default function Portfolio() {
+  const [normalizedProjects, setNormalizedProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedInnerProject, setSelectedInnerProject] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (!error && data) {
+        setNormalizedProjects(data as Project[]);
+        console.log("normalizedProjects", data); // Added console log for verification
+      }
+    };
+    
+    fetchProjects();
+
+    const channel = supabase
+      .channel('projects_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+        fetchProjects(); // Auto refresh on change
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Using only defaultProjects for the grid to preserve cinematic UI
+  // The dynamic data will be injected directly into the modals of these default projects.
+
+  useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [selectedProject]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
+  const renderModalContent = (project: Project) => {
+    const relatedDynamicProjects = normalizedProjects.filter(p => p.type === project.type);
+    
+    // Unify all content into a single sections array
+    const sections: any[] = [];
+    
+    // 1. Add the Default Demo Project as the first section
+    sections.push({
+      id: 'demo',
+      title: project.type === 'website' ? "Project Overview" : 
+             project.type === 'branding' ? "Brand System" : 
+             project.type === 'fashion' ? "AI Transformation" : 
+             project.type === 'growth' ? "Growth & Optimization" : "Merchandise Collection",
+      desc: project.type === 'website' ? "A comprehensive digital experience designed to maximize conversion rates and establish premium brand authority. We architected a scalable, high-performance platform using modern web technologies." :
+            project.type === 'branding' ? "A cohesive and memorable visual identity designed to stand out in a competitive market. From custom typography to packaging, every touchpoint reflects the brand's core values." :
+            project.type === 'fashion' ? "Using cutting-edge AI visualization, we transformed flat apparel photos into stunning, photorealistic model shots without the need for an expensive photoshoot." :
+            project.type === 'growth' ? "Through strategic Google Business optimization, localized SEO, and review management, we drastically increased visibility, customer trust, and organic lead generation." :
+            "Premium quality custom apparel and merchandise systems designed for modern brands. We manage design, printing specs, and packaging aesthetics.",
+      content: project.modalContent
+    });
+
+    // 2. Add all Dynamic Projects
+    relatedDynamicProjects.forEach(dp => {
+      const dyn = (dp as any).content || {};
+      const mergedContent: any = { ...dyn, mainImage: dp.image };
+      
+      if (project.type === 'website') {
+        mergedContent.desktopScreens = dyn.desktopScreens || [];
+      } else if (project.type === 'branding') {
+        mergedContent.logos = dyn.logos || [];
+      } else if (project.type === 'fashion') {
+        mergedContent.transformations = dyn.transformations || [];
+      } else if (project.type === 'growth') {
+        mergedContent.dashboards = dyn.dashboards || [];
+      } else if (project.type === 'pod') {
+        mergedContent.products = dyn.products || [];
+      }
+
+      sections.push({
+        id: dp.id,
+        title: dp.title,
+        desc: dp.desc,
+        content: mergedContent
+      });
+    });
+
+    const renderDeliverables = (deliverables?: string[], liveUrl?: string) => (
+      deliverables && deliverables.length > 0 && (
+        <div className="mt-4 md:mt-8 p-6 lg:p-8 rounded-[20px] bg-white/[0.02] border border-white/5 relative overflow-hidden">
+          <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#ceab7a]/10 blur-[50px] rounded-full pointer-events-none" />
+          <h3 className="text-[16px] font-serif text-white mb-6 tracking-wide">Key Deliverables</h3>
+          <ul className="space-y-4 text-[14px] text-gray-400">
+            {deliverables.map((item, idx) => (
+              <motion.li 
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2 + idx * 0.1 }}
+                key={idx} 
+                className="flex items-start gap-3"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-[#ceab7a] mt-1.5 shrink-0 shadow-[0_0_8px_rgba(206,171,122,0.8)]" />
+                <span>{item}</span>
+              </motion.li>
+            ))}
+          </ul>
+          
+          {liveUrl && (
+            <motion.a 
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="mt-8 w-full py-4 bg-[#ceab7a] hover:bg-white text-black font-bold rounded-full flex items-center justify-center gap-3 transition-colors duration-300 uppercase tracking-[0.15em] text-[11px] shadow-[0_0_30px_rgba(206,171,122,0.2)]"
+            >
+              Visit Live Project <ExternalLink size={16} />
+            </motion.a>
+          )}
+        </div>
+      )
+    );
+
+    const renderSeparator = () => (
+      <div className="pt-20 mt-12 border-t border-white/5 relative flex justify-center">
+        <div className="absolute -top-[1px] w-64 h-[1px] bg-gradient-to-r from-transparent via-[#ceab7a]/40 to-transparent"></div>
+        <div className="absolute -top-3 w-6 h-6 rounded-full bg-[#050505] border border-white/10 flex items-center justify-center">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#ceab7a]"></div>
+        </div>
+      </div>
+    );
+
+    const getCoverImage = (section: any) => {
+      const mc = section.content;
+      if (mc.mainImage) return mc.mainImage;
+      if (project.type === 'website') return mc.heroLaptop || mc.desktopScreens?.[0] || mc.mobileScreens?.[0];
+      if (project.type === 'branding') return mc.mockups?.[0] || mc.logos?.[0];
+      if (project.type === 'fashion') return mc.transformations?.[0]?.after || mc.transformations?.[0]?.before;
+      if (project.type === 'growth') return mc.dashboards?.[0];
+      if (project.type === 'pod') return mc.products?.[0];
+      return '';
+    };
+
+    if (!selectedInnerProject) {
+      return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
+          {sections.map((section, idx) => {
+            const coverImg = getCoverImage(section);
+            return (
+              <motion.div 
+                key={section.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                onClick={() => setSelectedInnerProject(section)}
+                className="group cursor-pointer flex flex-col gap-4"
+              >
+                <div className="aspect-[4/3] rounded-2xl overflow-hidden border border-white/5 bg-[#101010] relative">
+                  <img src={coverImg || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop"} alt={section.title} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300" />
+                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                    <span className="text-[#ceab7a] text-[11px] font-bold tracking-widest uppercase bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">View Project</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-serif text-white group-hover:text-[#ceab7a] transition-colors">{section.title}</h3>
+                  {section.desc && <p className="text-gray-400 text-sm mt-1 line-clamp-2">{section.desc}</p>}
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      );
+    }
+
+    const section = selectedInnerProject;
+    const mc = section.content;
+
+    return (
+      <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <button 
+          onClick={() => setSelectedInnerProject(null)}
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors w-fit group mb-4"
+        >
+          <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#ceab7a] group-hover:text-black transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </div>
+          <span className="text-sm font-medium tracking-wide">Back to Projects</span>
+        </button>
+
+        {mc.videoUrl && (
+          <div className="w-full aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#151515] relative">
+            <video src={mc.videoUrl} controls autoPlay muted loop className="w-full h-full object-cover" />
+          </div>
+        )}
+
+        {project.type === 'website' && (
+          <div className="flex flex-col gap-12">
+            {mc.heroLaptop && (
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="w-full aspect-[4/3] md:aspect-[21/9] rounded-2xl overflow-hidden border border-white/10 bg-[#151515] relative group">
+                <img src={mc.heroLaptop} alt="Website Showcase" className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000" loading="lazy" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              </motion.div>
+            )}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              <div className="lg:col-span-4 flex flex-col gap-6">
+                <h3 className="text-2xl font-serif text-[#ceab7a]">{section.title}</h3>
+                <p className="text-gray-400 text-[15px] leading-relaxed">{section.desc}</p>
+                {renderDeliverables(mc.deliverables, mc.liveUrl)}
+              </div>
+              <div className="lg:col-span-8 flex flex-col gap-8">
+                {mc.desktopScreens && mc.desktopScreens.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {mc.desktopScreens.map((img: string, i: number) => (
+                      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className="aspect-[4/3] rounded-xl overflow-hidden border border-white/5 bg-[#151515] group">
+                        <img src={img} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700" loading="lazy" />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+                {mc.mobileScreens && mc.mobileScreens.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    {mc.mobileScreens.map((img: string, i: number) => (
+                      <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.1 }} key={i} className="aspect-[9/16] rounded-xl overflow-hidden border border-white/5 bg-[#151515] group">
+                        <img src={img} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700" loading="lazy" />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+                {(!mc.desktopScreens?.length && !mc.mobileScreens?.length && !mc.heroLaptop && mc.mainImage && !mc.videoUrl) && (
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-3xl overflow-hidden bg-[#050505] flex justify-center items-center p-4">
+                    <img src={mc.mainImage} className="w-full max-w-sm md:max-w-md h-auto rounded-2xl object-contain drop-shadow-2xl border border-white/5" />
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {project.type === 'branding' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-4 flex flex-col gap-6">
+              <h3 className="text-2xl font-serif text-[#ceab7a]">{section.title}</h3>
+              <p className="text-gray-400 text-[15px] leading-relaxed">{section.desc}</p>
+              {renderDeliverables(mc.deliverables, mc.liveUrl)}
+            </div>
+            <div className="lg:col-span-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 auto-rows-[200px] md:auto-rows-[250px]">
+                {mc.logos?.map((img: string, i: number) => (
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={`logo-${i}`} className={`rounded-2xl overflow-hidden border border-white/5 bg-[#050505] p-3 flex items-center justify-center`}>
+                    <img src={img} className="max-w-full max-h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" loading="lazy" />
+                  </motion.div>
+                ))}
+                {mc.mockups?.map((img: string, i: number) => (
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1 }} key={`mockup-${i}`} className={`rounded-2xl overflow-hidden border border-white/5 bg-[#151515] group ${i % 3 === 0 ? 'sm:row-span-2' : ''}`}>
+                    <img src={img} className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700" loading="lazy" />
+                  </motion.div>
+                ))}
+                {(!mc.logos?.length && !mc.mockups?.length && mc.mainImage && !mc.videoUrl) && (
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="col-span-full rounded-3xl overflow-hidden bg-[#050505] flex justify-center items-center p-4">
+                    <img src={mc.mainImage} className="w-full max-w-sm md:max-w-md h-auto rounded-2xl object-contain drop-shadow-2xl border border-white/5" />
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {project.type === 'fashion' && (
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            <div className="w-full lg:w-[35%] flex flex-col gap-6">
+              <h3 className="text-2xl font-serif text-[#ceab7a]">{section.title}</h3>
+              <p className="text-gray-400 text-[15px] leading-relaxed">{section.desc}</p>
+              {renderDeliverables(mc.deliverables, mc.liveUrl)}
+            </div>
+            <div className="w-full lg:w-[65%] flex flex-col gap-8 md:gap-12">
+              {mc.transformations?.map((pair: any, i: number) => (
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.2 }} key={i} className="flex flex-col sm:flex-row gap-4 sm:gap-6 bg-white/[0.02] p-4 rounded-3xl border border-white/5">
+                  <div className="flex-1 rounded-2xl overflow-hidden relative aspect-[3/4] bg-[#101010]">
+                    <img src={pair.before} className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-700" loading="lazy" />
+                    <div className="absolute top-4 left-4 px-3 py-1 bg-black/80 backdrop-blur-md rounded-full text-[10px] text-gray-300 uppercase tracking-widest border border-white/10">Before</div>
+                  </div>
+                  <div className="flex-none flex items-center justify-center sm:rotate-0 rotate-90">
+                    <div className="w-8 h-8 rounded-full bg-[#ceab7a]/20 border border-[#ceab7a]/40 flex items-center justify-center text-[#ceab7a]">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                  </div>
+                  <div className="flex-1 rounded-2xl overflow-hidden relative aspect-[3/4] border border-[#ceab7a]/30 shadow-[0_0_30px_rgba(206,171,122,0.15)] bg-[#101010]">
+                    <img src={pair.after} className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-700" loading="lazy" />
+                    <div className="absolute top-4 left-4 px-3 py-1 bg-[#ceab7a] rounded-full text-[10px] text-black font-bold uppercase tracking-widest shadow-lg">After</div>
+                  </div>
+                </motion.div>
+              ))}
+
+              {(!mc.transformations || mc.transformations.length === 0) && mc.mainImage && !mc.videoUrl && (
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-3xl overflow-hidden bg-[#050505] flex justify-center items-center p-4">
+                  <img src={mc.mainImage} className="w-full max-w-sm md:max-w-md h-auto rounded-2xl object-contain drop-shadow-2xl border border-white/5" />
+                </motion.div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {project.type === 'growth' && (
+          <div className="flex flex-col gap-12">
+            {mc.metrics && mc.metrics.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                {mc.metrics.map((metric: any, i: number) => (
+                  <motion.div initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#ceab7a]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <span className="text-[32px] md:text-[40px] font-serif text-white mb-2 tracking-tight drop-shadow-[0_0_15px_rgba(206,171,122,0.3)]">{metric.value}</span>
+                    <span className="text-[11px] text-[#ceab7a] uppercase tracking-widest font-medium">{metric.label}</span>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+              <div className="lg:col-span-4 flex flex-col gap-6">
+                <h3 className="text-2xl font-serif text-[#ceab7a]">{section.title}</h3>
+                <p className="text-gray-400 text-[15px] leading-relaxed">{section.desc}</p>
+                {renderDeliverables(mc.deliverables, mc.liveUrl)}
+              </div>
+              <div className="lg:col-span-8 grid grid-cols-1 gap-6">
+                {mc.dashboards?.map((img: string, i: number) => (
+                  <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 + i * 0.1 }} key={i} className="aspect-video rounded-2xl overflow-hidden border border-white/5 bg-[#151515] relative group shadow-2xl">
+                    <img src={img} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 opacity-90 group-hover:opacity-100" loading="lazy" />
+                    <div className="absolute inset-0 border border-white/10 rounded-2xl pointer-events-none mix-blend-overlay" />
+                  </motion.div>
+                ))}
+                {(!mc.dashboards?.length && mc.mainImage && !mc.videoUrl) && (
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-3xl overflow-hidden bg-[#050505] flex justify-center items-center p-4">
+                    <img src={mc.mainImage} className="w-full max-w-sm md:max-w-md h-auto rounded-2xl object-contain drop-shadow-2xl border border-white/5" />
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {project.type === 'pod' && (
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            <div className="w-full lg:w-[35%] flex flex-col gap-6">
+              <h3 className="text-2xl font-serif text-[#ceab7a]">{section.title}</h3>
+              <p className="text-gray-400 text-[15px] leading-relaxed">{section.desc}</p>
+              {renderDeliverables(mc.deliverables, mc.liveUrl)}
+            </div>
+            <div className="w-full lg:w-[65%] grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {mc.products?.map((img: string, i: number) => (
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className={`rounded-2xl overflow-hidden border border-white/5 bg-[#101010] group ${i === 0 ? 'sm:col-span-2 aspect-video' : 'aspect-square'}`}>
+                  <img src={img} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700" loading="lazy" />
+                </motion.div>
+              ))}
+              {(!mc.products?.length && mc.mainImage && !mc.videoUrl) && (
+                <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="col-span-full rounded-3xl overflow-hidden bg-[#050505] flex justify-center items-center p-4">
+                  <img src={mc.mainImage} className="w-full max-w-sm md:max-w-md h-auto rounded-2xl object-contain drop-shadow-2xl border border-white/5" />
+                </motion.div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <>
+      <section id="work" className="py-24 md:py-32 relative bg-[#050505] overflow-hidden min-h-screen flex items-center border-y border-white/5">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12 relative w-full">
+          <div className="flex flex-col xl:flex-row gap-16 lg:gap-12 items-start justify-between">
+            
+            {/* Left Side: Editorial section intro */}
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="w-full xl:w-[32%] flex flex-col relative z-20 xl:sticky xl:top-32"
+            >
+              <motion.div variants={itemVariants} className="mb-10">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-6 h-[1px] bg-gray-500"></div>
+                  <span className="text-[11px] font-medium text-gray-400 tracking-[0.25em] uppercase">
+                    OUR WORK
+                  </span>
+                </div>
+                
+                <h2 className="font-serif text-[36px] sm:text-[42px] md:text-[50px] leading-[1.15] md:leading-[1.1] mb-6">
+                  <span className="block text-white">Selected Digital</span>
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a]">
+                    Experiences
+                  </span>
+                  <span className="block text-white pb-2">Built For Modern Brands.</span>
+                </h2>
+                
+                <p className="text-gray-400 text-[14px] md:text-[15px] leading-[1.7] max-w-[420px] mb-12">
+                  A showcase of premium websites, branding systems, AI fashion visualization, Google growth, and print-on-demand solutions crafted for ambitious brands.
+                </p>
+
+                <button className="px-8 py-4 bg-[#080808] border border-white/10 hover:border-[#ceab7a]/50 rounded-full text-white text-[12px] font-medium tracking-[0.15em] uppercase transition-all duration-300 hover:bg-[#ceab7a]/5 flex items-center gap-3 w-max group shadow-[0_0_20px_rgba(206,171,122,0.05)] hover:shadow-[0_0_30px_rgba(206,171,122,0.15)]">
+                  View Projects
+                  <ArrowUpRight size={16} className="text-[#ceab7a] group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+                </button>
+              </motion.div>
+            </motion.div>
+            
+            {/* Right Side: Interactive Bento Grid Showcase */}
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="w-full xl:w-[65%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-[340px] md:auto-rows-[280px] lg:auto-rows-[320px]"
+            >
+              {defaultProjects.map((project) => (
+                <motion.div 
+                  key={project.id}
+                  onClick={() => setSelectedProject(project)}
+                  variants={itemVariants}
+                  className={`group relative rounded-[20px] overflow-hidden border border-white/5 bg-[#050505] shadow-2xl flex flex-col hover:border-[#ceab7a]/30 transition-all duration-500 cursor-pointer ${project.className}`}
+                >
+                  {/* Image Area */}
+                  <div className="relative w-full flex-grow overflow-hidden bg-[#0a0a0a]">
+                    <img 
+                      src={project.image} 
+                      alt={project.title} 
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
+                    
+                    <div className="absolute top-5 left-5 z-20">
+                      <span className="inline-block px-3 py-1.5 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full text-[9px] md:text-[10px] font-medium tracking-[0.15em] text-[#e8d3b5] uppercase shadow-lg group-hover:border-[#ceab7a]/50 transition-colors duration-300">
+                        {project.category}
+                      </span>
+                    </div>
+                    
+                    <div className="absolute top-5 right-5 z-20 w-10 h-10 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[#ceab7a]/50 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                      <ArrowUpRight size={18} className="text-[#e8d3b5]" />
+                    </div>
+                  </div>
+                  
+                  {/* Premium Dock for Text */}
+                  <div className="relative w-full p-6 lg:p-8 border-t border-white/5 bg-[#080808] z-20 shrink-0">
+                    <h3 className="text-[18px] lg:text-[20px] font-serif text-white mb-2 group-hover:text-[#ceab7a] transition-colors duration-300 leading-tight">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-400 text-[13px] leading-[1.6] line-clamp-2">
+                      {project.desc}
+                    </p>
+                  </div>
+
+                  {/* Elegant Hover Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#ceab7a]/0 via-transparent to-[#ceab7a]/[0.05] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none" />
+                </motion.div>
+              ))}
+            </motion.div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive Project Modal Overlay */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {selectedProject && (
+            <motion.div 
+              key="project-modal"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => {
+                setSelectedProject(null);
+                setSelectedInnerProject(null);
+              }}
+              className="fixed inset-0 z-[9999] bg-[#050505]/95 backdrop-blur-2xl overflow-y-auto"
+            >
+              <div className="min-h-screen px-4 py-12 sm:p-6 md:p-12 flex items-start justify-center">
+                <motion.div 
+                  initial={{ y: 50, opacity: 0, scale: 0.95 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ y: 20, opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} // smooth cinematic spring
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-[1200px] bg-[#0a0a0a] border border-white/10 rounded-[24px] shadow-[0_0_80px_rgba(0,0,0,0.6)] overflow-hidden mt-0 sm:mt-8 mb-12"
+                >
+                  {/* Modal Sticky Header */}
+                  <div className="sticky top-0 z-30 flex items-start justify-between p-6 md:p-10 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
+                    <div className="pr-12">
+                      <span className="inline-block px-3 py-1 bg-[#ceab7a]/10 border border-[#ceab7a]/20 rounded-full text-[10px] font-medium tracking-[0.15em] text-[#ceab7a] uppercase mb-4 shadow-[0_0_15px_rgba(206,171,122,0.1)]">
+                        {selectedProject.category}
+                      </span>
+                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-white mb-4 leading-[1.1]">
+                        {selectedProject.title}
+                      </h2>
+                      <p className="text-gray-400 text-sm md:text-[15px] leading-relaxed max-w-2xl">
+                        {selectedProject.desc}
+                      </p>
+                    </div>
+                    
+                    {/* Premium Close Button */}
+                    <button 
+                      onClick={() => {
+                        setSelectedProject(null);
+                        setSelectedInnerProject(null);
+                      }}
+                      className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 text-white hover:text-[#ceab7a]"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  {/* Dynamic Service-Specific Gallery Area */}
+                  <div className="p-6 md:p-10 bg-[#050505]">
+                    {renderModalContent(selectedProject)}
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
+  );
+}
