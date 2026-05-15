@@ -30,6 +30,7 @@ createRoot(document.getElementById('root')!).render(
           
           {/* Admin Authentication */}
           <Route path="/login" element={<Login />} />
+          <Route path="/admin/login" element={<Login />} />
           
           {/* Protected Admin Routes */}
           <Route element={<ProtectedRoute />}>
@@ -39,6 +40,11 @@ createRoot(document.getElementById('root')!).render(
               <Route path="projects/new" element={<ProjectEditor />} />
               <Route path="projects/edit/:id" element={<ProjectEditor />} />
               <Route path="settings" element={<Settings />} />
+            </Route>
+            
+            {/* Dashboard alias to Admin */}
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<ProjectsList />} />
             </Route>
           </Route>
         </Routes>
