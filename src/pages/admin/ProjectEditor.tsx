@@ -9,7 +9,7 @@ const PROJECT_TYPES = [
   { id: 'website', label: 'Website Design' },
   { id: 'branding', label: 'Branding & Identity' },
   { id: 'fashion', label: 'AI Fashion Try-On' },
-  { id: 'growth', label: 'Google Business Growth' },
+  { id: 'growth', label: 'Power BI Data Analysis' },
   { id: 'pod', label: 'Print-On-Demand' }
 ];
 

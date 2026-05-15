@@ -54,7 +54,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors"
-                placeholder="admin@aimetaworld.com"
+                placeholder="aimetaworldd@gmail.com"
                 required
               />
             </div>

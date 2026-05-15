@@ -81,7 +81,7 @@ export default function Testimonials() {
               <div className="flex flex-col gap-6 border-l border-[#ceab7a]/30 pl-6 py-2">
                 <div className="flex items-center gap-4 group">
                   <div className="w-2 h-2 rotate-45 bg-[#ceab7a] opacity-50 group-hover:opacity-100 transition-opacity" />
-                  <span className="text-gray-200 font-medium tracking-wide">250+ Projects Delivered</span>
+                  <span className="text-gray-200 font-medium tracking-wide">15+ Projects Completed</span>
                 </div>
                 <div className="flex items-center gap-4 group">
                   <div className="w-2 h-2 rotate-45 bg-[#ceab7a] opacity-50 group-hover:opacity-100 transition-opacity" />

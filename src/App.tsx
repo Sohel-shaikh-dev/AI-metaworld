@@ -7,10 +7,8 @@ import Services from './components/Services';
 import Portfolio from './components/Portfolio';
 import WhyChooseUs from './components/WhyChooseUs';
 import Process from './components/Process';
-import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import ScrollyBackground from './components/ScrollyBackground';
 import Preloader from './components/Preloader';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 
@@ -47,18 +45,10 @@ function App() {
         }}
         transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: loading ? 0 : 0.2 }}
       >
-        {/* Scrollytelling Section Wrapper */}
-        <div className="relative w-full">
-          {/* Sticky Background limited to Hero and About */}
-          <div className="sticky top-0 h-screen w-full z-0 overflow-hidden">
-            <ScrollyBackground />
-          </div>
-          
-          {/* Content that scrolls OVER the sticky background */}
-          <div className="relative z-10 -mt-[100vh]">
-            <Hero />
-            <About />
-          </div>
+        {/* Sections */}
+        <div className="relative z-10 w-full flex flex-col bg-[#050505]">
+          <Hero />
+          <About />
         </div>
 
         {/* Normal Scrolling Sections */}
@@ -67,7 +57,6 @@ function App() {
           <Portfolio />
           <Process />
           <WhyChooseUs />
-          <Testimonials />
           <Contact />
         </div>
       </motion.main>

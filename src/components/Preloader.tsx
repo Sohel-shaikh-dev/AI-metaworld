@@ -9,26 +9,11 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   const [phase, setPhase] = useState<'appear' | 'logo-visible' | 'revealing' | 'finishing'>('appear');
 
   useEffect(() => {
-    // 1. Black screen initially
-    // 2. Logo softly emerges (0.2s)
-    const t1 = setTimeout(() => {
-      setPhase('logo-visible');
-    }, 200);
-
-    // 3. Reveal wave begins (0.6s)
-    const t2 = setTimeout(() => {
-      setPhase('revealing');
-    }, 600);
-
-    // 4. Reveal completes, stabilize (2.1s) (1.5s duration)
-    const t3 = setTimeout(() => {
-      setPhase('finishing');
-    }, 2100);
-
-    // 5. Cinematic pause ends, trigger transition (2.6s)
-    const t4 = setTimeout(() => {
-      onComplete();
-    }, 2600);
+    // Fast sequence
+    const t1 = setTimeout(() => setPhase('logo-visible'), 50);
+    const t2 = setTimeout(() => setPhase('revealing'), 150);
+    const t3 = setTimeout(() => setPhase('finishing'), 650); // 0.5s duration
+    const t4 = setTimeout(() => onComplete(), 800);
 
     return () => {
       clearTimeout(t1);
@@ -42,9 +27,9 @@ export default function Preloader({ onComplete }: PreloaderProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505] overflow-hidden"
+      className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#050505] overflow-hidden"
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Cinematic Background Atmosphere */}
       <motion.div 
@@ -62,7 +47,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           className="flex flex-col items-center gap-5"
           initial={{ scale: 0.95, y: 15 }}
           animate={{ scale: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="flex flex-col items-center">
             
@@ -77,7 +62,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                 opacity: phase !== 'appear' ? 0.9 : 0, 
                 filter: phase === 'finishing' ? 'blur(0px)' : (phase !== 'appear' ? 'blur(2px)' : 'blur(10px)')
               }}
-              transition={{ duration: 1.0, ease: "easeOut" }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
             />
 
             <motion.div layoutId="brand-text">
@@ -93,7 +78,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                     -webkit-mask-position: 100% 0%;
                   }
                   .reveal-base.animate {
-                    animation: waveReveal 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: waveReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
                   }
                   
                   .reveal-glow {
@@ -104,7 +89,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                     -webkit-mask-position: 100% 0%;
                   }
                   .reveal-glow.animate {
-                    animation: waveReveal 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                    animation: waveReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
                   }
                   
                   @keyframes waveReveal {
@@ -141,8 +126,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
                     opacity: phase === 'finishing' ? 0 : 1 
                   }}
                   transition={{ 
-                    width: { duration: 1.5, ease: [0.22, 1, 0.36, 1] },
-                    opacity: { duration: 0.6, ease: "easeInOut" }
+                    width: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                    opacity: { duration: 0.2, ease: "easeInOut" }
                   }}
                 />
               </div>
