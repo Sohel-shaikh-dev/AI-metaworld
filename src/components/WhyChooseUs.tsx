@@ -20,28 +20,28 @@ const cards = [
     title: "AI-Powered Strategy",
     desc: "We blend creativity with AI-driven workflows to build smarter digital experiences.",
     icon: Brain,
-    image: "/Assets/why_ai_strategy.png"
+    image: "/Assets/why_ai_strategy.webp"
   },
   {
     num: "02",
     title: "Cinematic UI/UX",
     desc: "Luxury visual experiences designed to feel modern, immersive and premium.",
     icon: Monitor,
-    image: "/Assets/why_cinematic_ui.png"
+    image: "/Assets/why_cinematic_ui.webp"
   },
   {
     num: "03",
     title: "Fast Communication",
     desc: "Quick replies, transparent updates and smooth collaboration at every step.",
     icon: MessageCircle,
-    image: "/Assets/why_fast_communication.png"
+    image: "/Assets/why_fast_communication.webp"
   },
   {
     num: "04",
     title: "Results Focused",
     desc: "Every design decision is made to improve engagement, trust and conversions.",
     icon: Rocket,
-    image: "/Assets/why_results_focused.png"
+    image: "/Assets/why_results_focused.webp"
   }
 ];
 

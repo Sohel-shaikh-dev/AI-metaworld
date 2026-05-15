@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { Zap, Target, Diamond, BriefcaseBusiness, Users, Clock, Smartphone, Quote, Sparkles } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
 
-export default function About() {
+const About = memo(function About() {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -82,7 +83,14 @@ export default function About() {
             
             {/* Logo Image */}
             <div className="w-[220px] sm:w-[260px] md:w-[300px] aspect-square relative z-10 flex justify-center items-center">
-              <img src="/Assets/logo.png" alt="AI Metaworld Logo" className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(206,171,122,0.2)]" />
+              <img 
+                src="/Assets/logo.webp" 
+                alt="AI Metaworld Logo" 
+                className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(206,171,122,0.2)]" 
+                loading="lazy"
+                width={300}
+                height={300}
+              />
             </div>
           </motion.div>
         </div>
@@ -176,4 +184,6 @@ export default function About() {
       </div>
     </section>
   );
-}
+});
+
+export default About;

@@ -38,7 +38,7 @@ export default function Login() {
         className="w-full max-w-md relative z-10"
       >
         <div className="text-center mb-10">
-          <img src="/Assets/logo.png" alt="AI Metaworld" className="w-12 h-12 object-contain mx-auto mb-6" />
+          <img src="/Assets/logo.webp" alt="AI Metaworld" className="w-12 h-12 object-contain mx-auto mb-6" />
           <h1 className="text-3xl font-serif text-white tracking-tight mb-2">Agency Access</h1>
           <p className="text-gray-400 text-sm">Secure login to the AI Metaworld platform.</p>
         </div>

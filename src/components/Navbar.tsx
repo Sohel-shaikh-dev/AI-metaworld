@@ -156,6 +156,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
 
           {/* Hamburger Menu Button */}
           <motion.button
+            aria-label="Open Mobile Menu"
             className="xl:hidden flex items-center justify-center w-[42px] h-[42px] border border-white/15 rounded-xl text-white hover:bg-white/5 hover:border-white/30 transition-all xl:ml-2"
             onClick={() => setMobileMenuOpen(true)}
             whileHover={{ scale: 1.05 }}
@@ -197,6 +198,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
               </div>
 
               <motion.button
+                aria-label="Close Mobile Menu"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center w-11 h-11 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-colors"
                 whileHover={{ scale: 1.05 }}
@@ -265,6 +267,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
                         href={social.href} 
                         target="_blank" 
                         rel="noreferrer"
+                        aria-label={`Visit our ${social.href.includes('instagram') ? 'Instagram' : social.href.includes('linkedin') ? 'LinkedIn' : social.href.includes('github') ? 'GitHub' : social.href.includes('facebook') ? 'Facebook' : 'YouTube'}`}
                         className="flex items-center justify-center w-12 h-12 rounded-xl border border-white/10 text-gray-400 hover:border-[#ceab7a]/50 hover:text-[#ceab7a] hover:bg-[#ceab7a]/5 transition-all hover:-translate-y-1"
                       >
                         {SIcon}

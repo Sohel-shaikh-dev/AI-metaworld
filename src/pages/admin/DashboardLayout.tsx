@@ -24,7 +24,7 @@ export default function DashboardLayout() {
         <div>
           <div className="p-6 border-b border-white/5 flex items-center justify-between">
             <Link to="/admin" className="flex items-center gap-3">
-              <img src="/Assets/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+              <img src="/Assets/logo.webp" alt="Logo" className="w-8 h-8 object-contain" />
               <span className="font-serif text-lg tracking-tight">AI Metaworld</span>
             </Link>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -54,7 +54,7 @@ const defaultProjects: Project[] = [
     category: "Websites",
     title: "AI Metaworld Website",
     desc: "Luxury AI agency website with cinematic UI/UX and high-conversion experience.",
-    image: "/Assets/service_web.png",
+    image: "/Assets/service_web.webp",
     className: "",
     tags: ["UI/UX", "Web Design", "Development"],
     icon: Monitor,
@@ -63,9 +63,9 @@ const defaultProjects: Project[] = [
       clientName: "AI Metaworld",
       liveUrl: "https://example.com",
       deliverables: ["Custom UI/UX Design", "Responsive React Architecture", "CMS Integration", "Performance Optimization"],
-      heroLaptop: "/Assets/service_web.png",
-      desktopScreens: ["/Assets/service_web.png", "/Assets/service_web.png"],
-      mobileScreens: ["/Assets/service_web.png", "/Assets/service_web.png"]
+      heroLaptop: "/Assets/service_web.webp",
+      desktopScreens: ["/Assets/service_web.webp", "/Assets/service_web.webp"],
+      mobileScreens: ["/Assets/service_web.webp", "/Assets/service_web.webp"]
     }
   },
   {
@@ -74,7 +74,7 @@ const defaultProjects: Project[] = [
     category: "Power BI",
     title: "Power BI Dashboard",
     desc: "Interactive dashboards that turn complex data into clear insights and smart decisions.",
-    image: "/Assets/service_powerbi_v2.png",
+    image: "/Assets/service_powerbi_v2.webp",
     className: "",
     tags: ["Power BI", "Data Analysis", "Dashboard"],
     icon: BarChart2,
@@ -88,7 +88,7 @@ const defaultProjects: Project[] = [
         { label: "Business Insights", value: "15+", trend: "up" },
         { label: "ROI", value: "+210%", trend: "up" }
       ],
-      dashboards: ["/Assets/service_powerbi_v2.png", "/Assets/service_powerbi_v2.png"]
+      dashboards: ["/Assets/service_powerbi_v2.webp", "/Assets/service_powerbi_v2.webp"]
     }
   },
   {
@@ -97,7 +97,7 @@ const defaultProjects: Project[] = [
     category: "Branding",
     title: "Luxora Brand Identity",
     desc: "Complete brand identity design that builds trust, recognition and leaves a lasting impact.",
-    image: "/Assets/service_branding.png",
+    image: "/Assets/service_branding.webp",
     className: "",
     tags: ["Branding", "Logo Design", "Identity"],
     icon: Rocket,
@@ -105,8 +105,8 @@ const defaultProjects: Project[] = [
     modalContent: {
       clientName: "Luxora Edge",
       deliverables: ["Brand Identity Strategy", "Logo Suite", "Typography System", "Merchandise Mockups"],
-      logos: ["/Assets/service_branding.png", "/Assets/service_branding.png"],
-      mockups: ["/Assets/service_branding.png", "/Assets/service_branding.png", "/Assets/service_branding.png"]
+      logos: ["/Assets/service_branding.webp", "/Assets/service_branding.webp"],
+      mockups: ["/Assets/service_branding.webp", "/Assets/service_branding.webp", "/Assets/service_branding.webp"]
     }
   },
   {
@@ -115,7 +115,7 @@ const defaultProjects: Project[] = [
     category: "AI Content",
     title: "AI Fashion Campaign",
     desc: "AI-powered fashion visuals that bring creativity, style and imagination to life.",
-    image: "/Assets/service_aifashion_v2.png",
+    image: "/Assets/service_aifashion_v2.webp",
     className: "",
     tags: ["AI Images", "Fashion", "Content"],
     icon: ImageIcon,
@@ -124,8 +124,8 @@ const defaultProjects: Project[] = [
       clientName: "ThreadFlow AI",
       deliverables: ["AI Model Generation", "Photorealistic Rendering", "Dynamic Lighting Match"],
       transformations: [
-        { before: "/Assets/service_aifashion_v2.png", after: "/Assets/service_aifashion_v2.png" },
-        { before: "/Assets/service_aifashion_v2.png", after: "/Assets/service_aifashion_v2.png" }
+        { before: "/Assets/service_aifashion_v2.webp", after: "/Assets/service_aifashion_v2.webp" },
+        { before: "/Assets/service_aifashion_v2.webp", after: "/Assets/service_aifashion_v2.webp" }
       ]
     }
   },
@@ -135,7 +135,7 @@ const defaultProjects: Project[] = [
     category: "Print-on-Demand",
     title: "Print-on-Demand Store",
     desc: "Custom POD solutions with unique designs that sell and scale effortlessly.",
-    image: "/Assets/service_pod_v3.png",
+    image: "/Assets/service_pod_v3.webp",
     className: "",
     tags: ["POD", "E-commerce", "Design"],
     icon: ShoppingBag,
@@ -143,12 +143,12 @@ const defaultProjects: Project[] = [
     modalContent: {
       clientName: "Street Culture Co.",
       deliverables: ["Custom Apparel Design", "Packaging Systems", "Print File Optimization"],
-      products: ["/Assets/service_pod_v3.png", "/Assets/service_pod_v3.png", "/Assets/service_pod_v3.png", "/Assets/service_pod_v3.png"]
+      products: ["/Assets/service_pod_v3.webp", "/Assets/service_pod_v3.webp", "/Assets/service_pod_v3.webp", "/Assets/service_pod_v3.webp"]
     }
   }
 ];
 
-export default function Portfolio() {
+const Portfolio = memo(function Portfolio() {
   const [activeFilter, setActiveFilter] = useState("All");
   const [normalizedProjects, setNormalizedProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -614,6 +614,7 @@ export default function Portfolio() {
                   <img 
                     src={project.image} 
                     alt={project.title} 
+                    loading="lazy"
                     className="w-[95%] sm:w-[85%] lg:w-[95%] mx-auto object-contain object-bottom group-hover:scale-[1.03] transition-transform duration-700 ease-out z-10 drop-shadow-2xl translate-y-4 group-hover:translate-y-2"
                   />
                   
@@ -734,6 +735,7 @@ export default function Portfolio() {
                     
                     {/* Premium Close Button */}
                     <button 
+                      aria-label="Close Project Details"
                       onClick={() => {
                         setSelectedProject(null);
                         setSelectedInnerProject(null);
@@ -757,4 +759,6 @@ export default function Portfolio() {
       )}
     </>
   );
-}
+});
+
+export default Portfolio;

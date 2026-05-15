@@ -51,19 +51,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         >
           <div className="flex flex-col items-center">
             
-            {/* 2. Logo softly visible before text reveals */}
-            <motion.img 
-              layoutId="brand-icon"
-              src="/Assets/logo.png" 
-              alt="AI Metaworld Logo" 
-              className="w-16 h-16 md:w-20 md:h-20 object-contain mb-4"
-              initial={{ opacity: 0, filter: 'blur(10px)' }}
-              animate={{ 
-                opacity: phase !== 'appear' ? 0.9 : 0, 
-                filter: phase === 'finishing' ? 'blur(0px)' : (phase !== 'appear' ? 'blur(2px)' : 'blur(10px)')
-              }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-            />
+
 
             <motion.div layoutId="brand-text">
               <div className="relative pb-3 pr-2 flex justify-center items-center">

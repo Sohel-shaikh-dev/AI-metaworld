@@ -17,6 +17,7 @@ export default function FloatingWhatsApp() {
         href={waLink}
         target="_blank"
         rel="noreferrer"
+        aria-label="Chat with us on WhatsApp"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className="relative flex items-center gap-3 pl-2 pr-6 py-2 rounded-full bg-[#050505] border border-[#25D366]/30 hover:border-[#25D366]/60 shadow-[0_0_20px_rgba(37,211,102,0.15)] group-hover:shadow-[0_0_30px_rgba(37,211,102,0.25)] transition-all duration-300"

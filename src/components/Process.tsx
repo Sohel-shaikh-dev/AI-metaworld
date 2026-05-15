@@ -22,7 +22,7 @@ const stages = [
     desc: "We understand your brand, goals and audience before building anything.",
     bullet: "Strategy first. Design second.",
     icon: Headphones,
-    image: "/Assets/p_discovery_new.png",
+    image: "/Assets/p_discovery_new.webp",
   },
   {
     num: "02",
@@ -30,7 +30,7 @@ const stages = [
     desc: "We create the structure, content direction and AI-powered execution plan.",
     bullet: "Built for clarity and conversion.",
     icon: FileText,
-    image: "/Assets/p_strategy_new.png",
+    image: "/Assets/p_strategy_new.webp",
   },
   {
     num: "03",
@@ -38,7 +38,7 @@ const stages = [
     desc: "Premium cinematic UI/UX with high-performance development.",
     bullet: "Luxury visuals meet functionality.",
     icon: Code,
-    image: "/Assets/p_design_new.png",
+    image: "/Assets/p_design_new.webp",
   },
   {
     num: "04",
@@ -46,7 +46,7 @@ const stages = [
     desc: "Testing, optimization and launch with continuous improvements.",
     bullet: "Focused on real business growth.",
     icon: Rocket,
-    image: "/Assets/p_launch_new.png",
+    image: "/Assets/p_launch_new.webp",
   }
 ];
 

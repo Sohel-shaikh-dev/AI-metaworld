@@ -1,8 +1,9 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Play, Zap, Monitor, PenTool, Video, BarChart3, Shirt, Rocket, Star, Calendar, Sparkles } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
 
-export default function Hero() {
+const Hero = memo(function Hero() {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     const el = document.getElementById(targetId);
@@ -14,14 +15,16 @@ export default function Hero() {
 
   return (
     <section id="home" className="relative pt-24 pb-16 md:pt-40 md:pb-24 overflow-hidden flex flex-col bg-[#050505] min-h-screen">
-      {/* Section-Specific Background Image (hero section part 1.jpeg) */}
+      {/* Section-Specific Background Image (hero section part 1.webp) */}
       <div className="absolute top-[5%] md:top-[-2%] lg:top-[-3%] right-0 md:right-[8%] lg:right-[12%] w-full md:w-[65%] lg:w-[60%] h-[50vh] md:h-[110%] z-0 flex justify-end items-start pointer-events-none"
            style={{ maskImage: 'linear-gradient(to right, transparent, black 30%)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 30%)' }}>
         <img 
-          src="/Assets/hero section part 1.jpeg" 
+          src="/Assets/hero section part 1.webp" 
           alt="Hero 3D AI Background" 
           className="w-full h-full object-contain object-right-top"
           style={{ objectPosition: 'right 20%' }}
+          fetchPriority="high"
+          loading="eager"
         />
       </div>
 
@@ -36,8 +39,8 @@ export default function Hero() {
         >
           {/* Premium Glass Badge */}
           <motion.div 
-            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/[0.03] border border-[#ceab7a]/30 backdrop-blur-md mb-8 group shadow-[0_0_20px_rgba(206,171,122,0.05)] cursor-default"
           >
@@ -49,8 +52,8 @@ export default function Hero() {
 
           {/* Main Title */}
           <motion.h1 
-            initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
             className="text-[2.5rem] leading-[1.1] sm:text-[3.5rem] md:text-[3.8rem] lg:text-[4.5rem] font-bold md:leading-[1.05] tracking-tight mb-6 min-h-[140px] sm:min-h-[160px] md:min-h-[180px]"
           >
@@ -73,8 +76,8 @@ export default function Hero() {
 
           {/* Description */}
           <motion.p 
-            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             className="text-[17px] sm:text-[18px] text-gray-400 leading-[1.6] mb-8 max-w-[550px] font-medium"
           >
@@ -91,8 +94,8 @@ export default function Hero() {
 
           {/* Premium CTA Buttons */}
           <motion.div 
-            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="flex flex-wrap items-center gap-4 mb-6 w-full sm:w-auto"
           >
@@ -215,4 +218,6 @@ export default function Hero() {
       </div>
     </section>
   );
-}
+});
+
+export default Hero;

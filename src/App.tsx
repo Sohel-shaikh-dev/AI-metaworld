@@ -1,16 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
-import Services from './components/Services';
-import Portfolio from './components/Portfolio';
-import WhyChooseUs from './components/WhyChooseUs';
-import Process from './components/Process';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
 import Preloader from './components/Preloader';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
+import SEO from './components/SEO';
+
+// Lazy loaded components for performance
+const Services = lazy(() => import('./components/Services'));
+const Portfolio = lazy(() => import('./components/Portfolio'));
+const WhyChooseUs = lazy(() => import('./components/WhyChooseUs'));
+const Process = lazy(() => import('./components/Process'));
+const Contact = lazy(() => import('./components/Contact'));
+const Footer = lazy(() => import('./components/Footer'));
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -29,6 +32,8 @@ function App() {
   }, [loading]);
   return (
     <div className="bg-[#050505] min-h-screen text-white w-full font-sans relative z-0">
+      <SEO />
+      
       <AnimatePresence mode="wait">
         {loading && <Preloader onComplete={() => setLoading(false)} />}
       </AnimatePresence>
@@ -37,10 +42,9 @@ function App() {
       
       <motion.main 
         className="relative z-10"
-        initial={{ opacity: 0, filter: 'blur(10px)', y: 20 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ 
           opacity: loading ? 0 : 1, 
-          filter: loading ? 'blur(10px)' : 'blur(0px)',
           y: loading ? 20 : 0
         }}
         transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: loading ? 0 : 0.2 }}
@@ -53,11 +57,13 @@ function App() {
 
         {/* Normal Scrolling Sections */}
         <div className="relative z-20 bg-[#050505]">
-          <Services />
-          <Portfolio />
-          <Process />
-          <WhyChooseUs />
-          <Contact />
+          <Suspense fallback={<div className="h-screen bg-[#050505]" />}>
+            <Services />
+            <Portfolio />
+            <Process />
+            <WhyChooseUs />
+            <Contact />
+          </Suspense>
         </div>
       </motion.main>
 
@@ -67,7 +73,9 @@ function App() {
         animate={{ opacity: loading ? 0 : 1 }}
         transition={{ duration: 1, delay: loading ? 0 : 0.4 }}
       >
-        <Footer />
+        <Suspense fallback={<div className="h-64 bg-[#050505]" />}>
+          <Footer />
+        </Suspense>
       </motion.div>
 
       {!loading && <FloatingWhatsApp />}

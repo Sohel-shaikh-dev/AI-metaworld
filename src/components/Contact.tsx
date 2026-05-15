@@ -19,7 +19,13 @@ import {
   ShieldCheck, 
   MessageCircle, 
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  Hourglass,
+  Rocket,
+  ArrowRight,
+  Home,
+  Check,
+  Shield
 } from 'lucide-react';
 import { useTypewriter } from '../hooks/useTypewriter';
 import { SparkleInput } from './SparkleInput';
@@ -53,6 +59,7 @@ export default function Contact() {
   });
 
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [phone, setPhone] = useState("");
   const [service, setService] = useState("");
@@ -62,8 +69,8 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone || !projectText) {
-      setErrorMsg("Please fill in all required fields.");
+    if (!name || !email || !service || !projectText) {
+      setErrorMsg("Please fill in all required fields (Name, Email, Service, and Description).");
       return;
     }
 
@@ -83,11 +90,12 @@ export default function Contact() {
         body: JSON.stringify({
           access_key: WEB3FORMS_ACCESS_KEY,
           name: name,
+          email: email,
           business_name: businessName,
-          phone: `+91 ${phone}`,
-          service: service || "Not specified",
+          phone: phone ? `+91 ${phone}` : "Not provided",
+          service: service,
           message: projectText,
-          subject: `New Lead: ${name} - ${service || "General Inquiry"}`,
+          subject: `New Lead: ${name} - ${service}`,
           from_name: "AI Metaworld Website",
         }),
       });
@@ -96,6 +104,7 @@ export default function Contact() {
       if (result.success) {
         setIsSuccess(true);
         setName("");
+        setEmail("");
         setBusinessName("");
         setPhone("");
         setService("");
@@ -255,21 +264,129 @@ export default function Contact() {
             className="w-full lg:w-[55%] relative h-full"
           >
             <div className="rounded-[24px] border border-white/5 bg-[#0a0a0a]/80 backdrop-blur-sm p-8 md:p-12 hover:border-white/10 transition-colors shadow-2xl relative overflow-hidden h-full">
-              <h4 className="text-[11px] font-medium text-[#ceab7a] tracking-[0.15em] uppercase mb-8">TELL US ABOUT YOUR PROJECT</h4>
-              
               {isSuccess ? (
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center text-center py-20 space-y-6 h-full">
-                  <div className="w-24 h-24 bg-[#ceab7a]/10 rounded-full flex items-center justify-center mb-4 border border-[#ceab7a]/20 shadow-[0_0_30px_rgba(206,171,122,0.15)]">
-                    <CheckCircle2 size={48} className="text-[#ceab7a]" />
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center text-center py-4 space-y-8 h-full w-full">
+                  {/* Top Header */}
+                  <div className="w-full flex justify-start mb-2">
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-[#ceab7a] uppercase">THANK YOU FOR REACHING OUT</span>
                   </div>
-                  <h3 className="text-[32px] font-serif text-white">Message Sent!</h3>
-                  <p className="text-gray-400 max-w-sm leading-relaxed">Thank you for reaching out. Our team will review your project details and get back to you shortly.</p>
-                  <button onClick={() => setIsSuccess(false)} className="mt-8 px-8 py-3 bg-white/5 border border-white/10 hover:border-[#ceab7a]/50 rounded-full text-white text-[13px] tracking-wide transition-all duration-300">
-                    Send Another Message
-                  </button>
+
+                  {/* Glowing Check Circle */}
+                  <div className="relative flex items-center justify-center mb-6">
+                    <div className="absolute w-32 h-32 bg-[#ceab7a]/20 rounded-full blur-2xl animate-pulse" />
+                    <div className="absolute w-24 h-24 border border-[#ceab7a]/40 rounded-full animate-ping opacity-50" style={{ animationDuration: '3s' }} />
+                    <div className="w-20 h-20 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-full flex items-center justify-center border-2 border-[#ceab7a] shadow-[0_0_40px_rgba(206,171,122,0.4)] relative z-10">
+                      <Check size={32} strokeWidth={3} className="text-[#ceab7a]" />
+                    </div>
+                  </div>
+
+                  {/* Main Titles */}
+                  <div className="space-y-2">
+                    <h3 className="text-[32px] md:text-[40px] font-serif text-white leading-tight">Your Project Inquiry</h3>
+                    <h3 className="text-[36px] md:text-[44px] font-serif text-[#ceab7a] leading-tight drop-shadow-[0_0_15px_rgba(206,171,122,0.5)]">Has Been Received.</h3>
+                  </div>
+
+                  <p className="text-gray-300 max-w-md leading-relaxed text-[15px] font-light">
+                    Our team will review your requirements and<br />contact you shortly via WhatsApp or email.
+                  </p>
+
+                  {/* Reply Pill */}
+                  <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#ceab7a]/30 bg-[#ceab7a]/5 shadow-[0_0_15px_rgba(206,171,122,0.1)]">
+                    <Zap size={14} className="text-[#ceab7a] fill-[#ceab7a]" />
+                    <span className="text-[#ceab7a] text-[13px] font-medium tracking-wide">Usually replies within 1 hour</span>
+                  </div>
+
+                  {/* What Happens Next Timeline */}
+                  <div className="w-full mt-10 rounded-2xl border border-white/5 bg-[#111]/50 p-8 relative">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 bg-[#0a0a0a]">
+                      <span className="text-[11px] font-bold tracking-[0.2em] text-[#ceab7a] uppercase">WHAT HAPPENS NEXT?</span>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative mt-6">
+                      {/* Connecting Line */}
+                      <div className="hidden md:block absolute top-6 left-[15%] right-[15%] h-[1px] border-t border-dashed border-[#ceab7a]/30">
+                        <div className="absolute top-[-3px] left-0 w-1.5 h-1.5 rounded-full bg-[#ceab7a] shadow-[0_0_8px_rgba(206,171,122,1)]" />
+                        <div className="absolute top-[-3px] left-1/2 w-1.5 h-1.5 rounded-full bg-[#ceab7a] shadow-[0_0_8px_rgba(206,171,122,1)]" />
+                      </div>
+                      
+                      {/* Step 1 */}
+                      <div className="flex flex-col items-center text-center relative z-10 flex-1">
+                        <div className="w-12 h-12 rounded-full border border-[#ceab7a]/40 bg-[#0a0a0a] flex items-center justify-center mb-4">
+                          <CheckCircle2 size={20} className="text-[#ceab7a]" />
+                        </div>
+                        <h5 className="text-white text-[14px] font-medium mb-1">Inquiry Received</h5>
+                        <p className="text-gray-400 text-[12px] leading-relaxed max-w-[140px]">We've received your project details.</p>
+                      </div>
+
+                      {/* Step 2 */}
+                      <div className="flex flex-col items-center text-center relative z-10 flex-1">
+                        <div className="w-12 h-12 rounded-full border border-white/10 bg-[#0a0a0a] flex items-center justify-center mb-4">
+                          <Hourglass size={20} className="text-gray-400" />
+                        </div>
+                        <h5 className="text-white text-[14px] font-medium mb-1">Strategy Review</h5>
+                        <p className="text-gray-400 text-[12px] leading-relaxed max-w-[140px]">Our team will analyze your requirements.</p>
+                      </div>
+
+                      {/* Step 3 */}
+                      <div className="flex flex-col items-center text-center relative z-10 flex-1">
+                        <div className="w-12 h-12 rounded-full border border-white/10 bg-[#0a0a0a] flex items-center justify-center mb-4">
+                          <Rocket size={20} className="text-gray-400" />
+                        </div>
+                        <h5 className="text-white text-[14px] font-medium mb-1">Project Discussion</h5>
+                        <p className="text-gray-400 text-[12px] leading-relaxed max-w-[140px]">We'll contact you to discuss the best solution.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="flex flex-col sm:flex-row w-full gap-4 mt-8">
+                    <a href={waLink} target="_blank" rel="noreferrer" className="flex-1 px-6 py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black rounded-xl flex items-center justify-between group hover:shadow-[0_0_30px_rgba(206,171,122,0.4)] transition-all">
+                      <div className="flex items-center gap-3 text-left">
+                        <MessageCircle size={24} />
+                        <div className="flex flex-col items-start">
+                          <span className="font-bold text-[15px]">Continue on WhatsApp</span>
+                          <span className="text-[12px] font-medium text-black/70">Chat with us directly</span>
+                        </div>
+                      </div>
+                      <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </a>
+
+                    <button onClick={() => window.location.href='/'} className="flex-1 px-6 py-4 bg-transparent border border-white/10 hover:border-[#ceab7a]/50 text-white rounded-xl flex items-center justify-between group transition-all text-left">
+                      <div className="flex items-center gap-3">
+                        <Home size={24} className="text-gray-400 group-hover:text-[#ceab7a] transition-colors" />
+                        <div className="flex flex-col items-start">
+                          <span className="font-bold text-[15px]">Back to Homepage</span>
+                          <span className="text-[12px] text-gray-500">Explore more</span>
+                        </div>
+                      </div>
+                      <ArrowRight size={20} className="text-gray-400 group-hover:text-[#ceab7a] group-hover:translate-x-1 transition-all" />
+                    </button>
+                  </div>
+
+                  {/* Footer Security Note */}
+                  <div className="w-full flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-white/5 mt-8 text-left">
+                    <div className="flex items-center gap-3">
+                      <Shield size={24} className="text-[#ceab7a]" />
+                      <div className="flex flex-col">
+                        <span className="text-white text-[12px] font-medium">Your information is secure with us.</span>
+                        <span className="text-gray-500 text-[11px]">We respect your privacy and never share your details.</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-end">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#ceab7a] font-serif text-[20px] font-bold leading-none">AI</span>
+                        <span className="text-white font-medium tracking-wide text-[14px]">METAWORLD</span>
+                      </div>
+                      <span className="text-[8px] text-gray-500 tracking-[0.2em] mt-1">AI POWERED CREATIVE AGENCY</span>
+                    </div>
+                  </div>
+
                 </motion.div>
               ) : (
-                <form className="space-y-6 md:space-y-8" onSubmit={handleSubmit}>
+                <>
+                  <h4 className="text-[11px] font-medium text-[#ceab7a] tracking-[0.15em] uppercase mb-8">TELL US ABOUT YOUR PROJECT</h4>
+                  <form className="space-y-6 md:space-y-8" onSubmit={handleSubmit}>
                   {errorMsg && (
                     <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm">
                       {errorMsg}
@@ -295,6 +412,25 @@ export default function Contact() {
                     </div>
                   </div>
 
+                  {/* Email Address */}
+                  <div className="space-y-3">
+                    <label className="text-[13px] font-medium text-white tracking-wide">Email Address</label>
+                    <div className="relative">
+                      <SparkleInput
+                        as="input"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        placeholder="Enter your email address"
+                        className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-6 pr-12 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300"
+                      />
+                      <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <Mail size={18} className="text-gray-500" />
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Business Name */}
                   <div className="space-y-3">
                     <label className="text-[13px] font-medium text-white tracking-wide">Business / Brand Name</label>
@@ -315,7 +451,7 @@ export default function Contact() {
 
                   {/* WhatsApp Number */}
                   <div className="space-y-3">
-                    <label className="text-[13px] font-medium text-white tracking-wide">WhatsApp Number</label>
+                    <label className="text-[13px] font-medium text-white tracking-wide">WhatsApp Number (Optional)</label>
                     <div className="relative flex">
                       <div className="absolute left-0 top-0 bottom-0 flex items-center gap-2 pl-5 pr-3 border-r border-white/10 bg-[#111] rounded-l-[16px] z-10 pointer-events-none">
                           <span className="text-lg">🇮🇳</span>
@@ -326,8 +462,10 @@ export default function Contact() {
                         as="input"
                         type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                        required
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          if (val.length <= 10) setPhone(val);
+                        }}
                         placeholder="Enter your WhatsApp number"
                         className="w-full pl-[110px] pr-12 bg-[#050505] border border-white/10 rounded-[16px] px-6 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300"
                       />
@@ -422,6 +560,7 @@ export default function Contact() {
                     <span>Your information is safe with us. We never share your data.</span>
                   </div>
                 </form>
+                </>
               )}
             </div>
           </motion.div>
@@ -441,7 +580,7 @@ export default function Contact() {
           <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 z-10 w-full lg:w-auto text-center sm:text-left">
             {/* Image */}
             <div className="w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-full overflow-hidden bg-[#111] border border-white/10 shadow-[0_0_30px_rgba(206,171,122,0.15)] group-hover/ready:shadow-[0_0_40px_rgba(206,171,122,0.3)] transition-all shrink-0 relative">
-                <img src="/Assets/contact_rocket.png" alt="Ready to start" className="w-full h-full object-cover group-hover/ready:scale-110 transition-transform duration-700" />
+                <img src="/Assets/contact_rocket.webp" alt="Ready to start" className="w-full h-full object-cover group-hover/ready:scale-110 transition-transform duration-700" />
             </div>
             <div className="flex flex-col">
                 <span className="text-[11px] font-medium text-[#ceab7a] tracking-[0.15em] uppercase mb-2">READY TO START?</span>

@@ -67,7 +67,7 @@ export default function Footer() {
             
             <div className="w-full lg:w-[45%] relative mt-12 lg:mt-0 flex justify-center lg:justify-end">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#ceab7a] rounded-full blur-[100px] opacity-10 pointer-events-none" />
-               <img src="/Assets/footer_ai_box.png" alt="AI Metaworld Tech" className="w-full max-w-[320px] lg:max-w-[400px] object-contain drop-shadow-[0_0_30px_rgba(206,171,122,0.3)] relative z-10 mix-blend-screen" />
+               <img src="/Assets/footer_ai_box.webp" alt="AI Metaworld Tech" className="w-full max-w-[320px] lg:max-w-[400px] object-contain drop-shadow-[0_0_30px_rgba(206,171,122,0.3)] relative z-10 mix-blend-screen" />
             </div>
           </motion.div>
 
@@ -82,7 +82,7 @@ export default function Footer() {
             {/* Column 1: Brand Area (Takes up more space) */}
             <motion.div variants={itemVariants} className="lg:col-span-3 lg:pr-6">
               <div className="flex items-center gap-4 mb-6">
-                <img src="/Assets/logo.png" alt="AI Metaworld" className="w-12 h-12 object-contain" />
+                <img src="/Assets/logo.webp" alt="AI Metaworld" className="w-12 h-12 object-contain" />
                 <div className="flex flex-col">
                   <span className="font-serif font-medium text-[20px] tracking-wide text-white uppercase">AI METAWORLD</span>
                   <span className="text-[9px] text-[#ceab7a] tracking-[0.15em] font-medium uppercase">AI Powered Creative Agency</span>
@@ -102,7 +102,7 @@ export default function Footer() {
                   { name: 'Facebook', href: 'https://www.facebook.com/share/1asBpmQEbw/', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
                   { name: 'YouTube', href: 'https://www.youtube.com/@Aimetaworld', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg> }
                 ].map((social) => (
-                  <a key={social.name} href={social.href} target="_blank" rel="noreferrer" className="w-11 h-11 rounded-xl border border-white/10 bg-[#0a0a0a] flex items-center justify-center text-gray-400 hover:border-[#ceab7a]/50 hover:text-[#ceab7a] hover:shadow-[0_0_15px_rgba(206,171,122,0.15)] transition-all group">
+                  <a key={social.name} href={social.href} target="_blank" rel="noreferrer" aria-label={`Visit our ${social.name}`} className="w-11 h-11 rounded-xl border border-white/10 bg-[#0a0a0a] flex items-center justify-center text-gray-400 hover:border-[#ceab7a]/50 hover:text-[#ceab7a] hover:shadow-[0_0_15px_rgba(206,171,122,0.15)] transition-all group">
                      <div className="group-hover:scale-110 transition-transform">
                        {social.icon}
                      </div>
