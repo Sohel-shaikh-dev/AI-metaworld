@@ -15,6 +15,7 @@ import DashboardLayout from './pages/admin/DashboardLayout'
 import ProjectsList from './pages/admin/ProjectsList'
 import ProjectEditor from './pages/admin/ProjectEditor'
 import Settings from './pages/admin/Settings'
+import ResetPassword from './pages/admin/ResetPassword'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -31,6 +32,7 @@ createRoot(document.getElementById('root')!).render(
           {/* Admin Authentication */}
           <Route path="/login" element={<Login />} />
           <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/reset-password" element={<ResetPassword />} />
           
           {/* Protected Admin Routes */}
           <Route element={<ProtectedRoute />}>
