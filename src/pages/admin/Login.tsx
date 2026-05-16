@@ -3,15 +3,35 @@ import { supabase } from '../../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isResetMode, setIsResetMode] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isResetMode) {
+      setLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + '/admin/reset-password',
+      });
+      
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success('Password reset link sent to your email!');
+        setIsResetMode(false);
+      }
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -39,8 +59,12 @@ export default function Login() {
       >
         <div className="text-center mb-10">
           <img src="/Assets/logo.webp" alt="AI Metaworld" className="w-12 h-12 object-contain mx-auto mb-6" />
-          <h1 className="text-3xl font-serif text-white tracking-tight mb-2">Agency Access</h1>
-          <p className="text-gray-400 text-sm">Secure login to the AI Metaworld platform.</p>
+          <h1 className="text-3xl font-serif text-white tracking-tight mb-2">
+            {isResetMode ? 'Reset Password' : 'Agency Access'}
+          </h1>
+          <p className="text-gray-400 text-sm">
+            {isResetMode ? 'Enter your email to receive a reset link.' : 'Secure login to the AI Metaworld platform.'}
+          </p>
         </div>
 
         <div className="bg-[#101010] border border-white/5 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
@@ -59,19 +83,37 @@ export default function Login() {
               />
             </div>
             
-            <div className="space-y-2">
-              <div className="flex items-center justify-between ml-1">
-                <label className="text-xs uppercase tracking-widest text-gray-400 font-medium">Password</label>
+            {!isResetMode && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-xs uppercase tracking-widest text-gray-400 font-medium">Password</label>
+                  <button 
+                    type="button" 
+                    onClick={() => setIsResetMode(true)}
+                    className="text-xs text-[#ceab7a] hover:text-white transition-colors"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <div className="relative">
+                  <input 
+                    type={showPassword ? "text" : "password"} 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors pr-10"
+                    placeholder="••••••••"
+                    required={!isResetMode}
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors"
-                placeholder="••••••••"
-                required
-              />
-            </div>
+            )}
 
             <button 
               type="submit" 
@@ -80,10 +122,24 @@ export default function Login() {
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              ) : isResetMode ? (
+                'Send Reset Link'
               ) : (
                 'Authenticate'
               )}
             </button>
+
+            {isResetMode && (
+              <div className="text-center mt-4">
+                <button 
+                  type="button" 
+                  onClick={() => setIsResetMode(false)}
+                  className="text-xs text-gray-400 hover:text-white transition-colors"
+                >
+                  Back to Login
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </motion.div>
