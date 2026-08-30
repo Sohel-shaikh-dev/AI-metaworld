@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -208,6 +208,44 @@ const Portfolio = memo(function Portfolio() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
+  const openProject = useCallback((project: Project) => {
+    if (window.location.hash !== '#project-' + project.id) {
+      window.history.pushState({ projectModalOpen: true }, '', '#project-' + project.id);
+    }
+    setSelectedProject(project);
+  }, []);
+
+  const closeProject = useCallback(() => {
+    if (window.history.state?.projectModalOpen) {
+      window.history.back();
+    } else {
+      window.history.pushState({}, '', window.location.pathname + window.location.search);
+      setSelectedProject(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (window.location.hash.startsWith('#project-')) {
+        const projectId = window.location.hash.replace('#project-', '');
+        const project = normalizedProjects.find(p => p.id === projectId);
+        if (project) {
+          setSelectedProject(project);
+        } else {
+          setSelectedProject(null);
+        }
+      } else {
+        setSelectedProject(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    if (normalizedProjects.length > 0 && window.location.hash.startsWith('#project-')) {
+      handlePopState();
+    }
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [normalizedProjects]);
+
   useEffect(() => {
     const fetchProjects = async () => {
       const { data, error } = await supabase
@@ -399,7 +437,7 @@ const Portfolio = memo(function Portfolio() {
              
              <h3 className="text-2xl font-serif text-white mb-3">Like what you see?</h3>
              <p className="text-gray-400 mb-8 max-w-md mx-auto">Let's collaborate to build a premium digital experience tailored specifically for your brand.</p>
-             <button onClick={() => { document.body.style.overflow = 'auto'; window.location.href = '#contact'; setSelectedProject(null); }} className="px-6 py-3 border border-white/20 hover:border-[#ceab7a] hover:bg-[#ceab7a]/10 rounded-full text-white text-[13px] tracking-wide transition-all duration-300">
+             <button onClick={() => { closeProject(); setTimeout(() => { window.location.href = "#contact"; }, 50); }} className="px-6 py-3 border border-white/20 hover:border-[#ceab7a] hover:bg-[#ceab7a]/10 rounded-full text-white text-[13px] tracking-wide transition-all duration-300">
                Start a Project
              </button>
           </div>
@@ -1142,7 +1180,7 @@ const Portfolio = memo(function Portfolio() {
                       {filteredProjects.map((project, idx) => (
                         <motion.div 
                           key={project.id}
-                          onClick={() => setSelectedProject(project)}
+                          onClick={() => openProject(project)}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: idx * 0.1 }}
@@ -1220,7 +1258,7 @@ const Portfolio = memo(function Portfolio() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
-              onClick={() => setSelectedProject(null)}
+              onClick={closeProject}
               className="fixed inset-0 z-[9999] bg-[#050505] overflow-y-auto"
             >
               <div className="min-h-screen px-4 py-12 sm:p-6 md:p-12 flex items-start justify-center">
@@ -1247,7 +1285,7 @@ const Portfolio = memo(function Portfolio() {
                     
                     <button 
                       aria-label="Close Project Details"
-                      onClick={() => setSelectedProject(null)}
+                      onClick={closeProject}
                       className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 text-white hover:text-[#ceab7a]"
                     >
                       <X size={20} />
@@ -1269,3 +1307,4 @@ const Portfolio = memo(function Portfolio() {
 });
 
 export default Portfolio;
+
