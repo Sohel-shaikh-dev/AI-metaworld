@@ -230,7 +230,7 @@ export default function Services() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true }}
           className="flex flex-wrap justify-center gap-6 w-full mb-16"
         >
           {services.map((service, idx) => (

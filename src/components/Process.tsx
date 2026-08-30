@@ -85,7 +85,7 @@ export default function Process() {
         <motion.div 
            initial={{ opacity: 0, y: 30 }}
            whileInView={{ opacity: 1, y: 0 }}
-           viewport={{ once: true, margin: "-100px" }}
+           viewport={{ once: true }}
            transition={{ duration: 0.8, ease: "easeOut" }}
            className="max-w-3xl mx-auto text-center mb-24 md:mb-32 px-6"
         >
@@ -131,7 +131,7 @@ export default function Process() {
                     key={stage.num}
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.7, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
                     className="relative w-full pl-[60px] md:pl-[120px] pr-6 md:pr-0"
                   >

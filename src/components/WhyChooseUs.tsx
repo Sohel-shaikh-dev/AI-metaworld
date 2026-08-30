@@ -75,7 +75,7 @@ export default function WhyChooseUs() {
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="flex flex-col items-center text-center w-full mb-16 md:mb-20"
         >
@@ -104,7 +104,7 @@ export default function WhyChooseUs() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true }}
           className="relative rounded-[32px] border border-[#ceab7a]/10 bg-[#080808]/80 backdrop-blur-sm p-4 md:p-6 lg:p-8 flex flex-col gap-6 w-full max-w-[1000px] shadow-[0_0_50px_rgba(0,0,0,0.8)]"
         >
           {/* Top Glowing Star Indicator */}

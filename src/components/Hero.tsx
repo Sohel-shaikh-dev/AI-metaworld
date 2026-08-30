@@ -23,11 +23,11 @@ const Hero = memo(function Hero() {
 
   return (
     <section id="home" className="relative pt-24 pb-16 md:pt-40 md:pb-24 overflow-hidden flex flex-col bg-[#050505] min-h-screen">
-      {/* Section-Specific Background Image (hero section part 1.webp) */}
+      {/* Section-Specific Background Image (hero_section_part_1.webp) */}
       <div className="absolute top-[5%] md:top-[-2%] lg:top-[-3%] right-0 md:right-[8%] lg:right-[12%] w-full md:w-[65%] lg:w-[60%] h-[50vh] md:h-[110%] z-0 flex justify-end items-start pointer-events-none"
            style={{ maskImage: 'linear-gradient(to right, transparent, black 30%)', WebkitMaskImage: 'linear-gradient(to right, transparent, black 30%)' }}>
         <img 
-          src="/Assets/hero section part 1.webp" 
+          src="/Assets/hero_section_part_1.webp" 
           alt="Hero 3D AI Background" 
           className="w-full h-full object-contain object-right-top"
           style={{ objectPosition: 'right 20%' }}

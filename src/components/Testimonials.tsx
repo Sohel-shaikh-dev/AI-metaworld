@@ -58,7 +58,7 @@ export default function Testimonials() {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             className="w-full lg:w-[40%] xl:w-[35%] flex flex-col relative z-20 lg:sticky lg:top-32"
           >
             <motion.div variants={itemVariants} className="mb-10">
@@ -104,7 +104,7 @@ export default function Testimonials() {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             className="w-full lg:w-[55%] xl:w-[60%] grid grid-cols-1 md:grid-cols-2 gap-6 items-start"
           >
             {/* Column 1 */}

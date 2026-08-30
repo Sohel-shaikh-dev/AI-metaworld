@@ -41,7 +41,7 @@ export default function Footer() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true }}
         >
 
           {/* Top Banner (Ready to Start) */}

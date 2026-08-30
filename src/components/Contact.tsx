@@ -156,7 +156,7 @@ export default function Contact() {
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="flex flex-col items-center text-center w-full mb-12"
         >
@@ -200,7 +200,7 @@ export default function Contact() {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             className="w-full lg:w-[45%] flex flex-col gap-6"
           >
             {/* Box 1: Why Work With Us */}
@@ -288,7 +288,7 @@ export default function Contact() {
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
             className="w-full lg:w-[55%] relative h-full"
           >
