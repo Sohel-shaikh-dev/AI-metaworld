@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 interface UseTypewriterOptions {
   words: string[];
   typingSpeed?: number;
   deletingSpeed?: number;
   delayPause?: number;
+  delayRestart?: number;
   loop?: boolean;
   isPaused?: boolean;
 }
@@ -14,15 +15,13 @@ export function useTypewriter({
   typingSpeed = 70,
   deletingSpeed = 40,
   delayPause = 2500,
+  delayRestart = 500,
   loop = true,
   isPaused = false,
 }: UseTypewriterOptions) {
   const [text, setText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
-  
-  const typingSpeedRef = useRef(typingSpeed);
-  const deletingSpeedRef = useRef(deletingSpeed);
   
   useEffect(() => {
     if (isPaused) return;
@@ -33,22 +32,18 @@ export function useTypewriter({
     const fullText = words[i];
 
     if (isDeleting) {
-      // Slight randomness to deletion for human feel
-      const randomSpeed = deletingSpeedRef.current + Math.random() * 20;
-      
       timeout = setTimeout(() => {
         setText(fullText.substring(0, text.length - 1));
         
         if (text.length === 1) { // 1 because this state update hasn't rendered yet
-          setIsDeleting(false);
-          setLoopNum(loopNum + 1);
+          setTimeout(() => {
+            setIsDeleting(false);
+            setLoopNum(loopNum + 1);
+          }, delayRestart);
         }
-      }, randomSpeed);
+      }, deletingSpeed);
       
     } else {
-      // Add some natural human variance to typing speed
-      const randomSpeed = typingSpeedRef.current + (Math.random() * 40 - 20);
-      
       timeout = setTimeout(() => {
         setText(fullText.substring(0, text.length + 1));
         
@@ -59,12 +54,12 @@ export function useTypewriter({
           // Schedule deletion after delayPause
           setTimeout(() => setIsDeleting(true), delayPause);
         }
-      }, randomSpeed);
+      }, typingSpeed);
     }
 
     return () => clearTimeout(timeout);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, isDeleting, loopNum, words, loop, isPaused, delayPause]);
+  }, [text, isDeleting, loopNum, words, loop, isPaused, delayPause, delayRestart, typingSpeed, deletingSpeed]);
 
   return text;
 }

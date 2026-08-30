@@ -2,11 +2,23 @@ import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { 
   Mail, MessageSquare, MapPin, Clock, Zap, ChevronRight, 
-  Rocket, ShieldCheck, Users, Headphones, Star, ArrowRight 
+  Rocket, ShieldCheck, Users, Headphones, Star, ArrowRight,
+  Link as LinkIcon, BriefcaseBusiness, Smartphone, Calendar
 } from 'lucide-react';
+import { getSocialIcon } from './SocialIcons';
 import { Link } from 'react-router-dom';
 
+import { useSettings } from '../contexts/SettingsContext';
+
+const StatIconMap: Record<string, any> = {
+  Link: LinkIcon, Rocket, Star, Calendar, Zap, BriefcaseBusiness, Users, Clock, Smartphone
+};
+
 export default function Footer() {
+  const { settings } = useSettings();
+  const { brand_settings, contact_settings, footer_settings, social_settings, stats_settings } = settings;
+  const activeSocials = social_settings.filter(s => s.active).sort((a, b) => a.order - b.order);
+  const activeStats = stats_settings.filter(s => s.active).sort((a, b) => a.order - b.order);
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -42,12 +54,12 @@ export default function Footer() {
                  <Star size={12} className="text-[#ceab7a] fill-[#ceab7a]" />
                  <span className="text-[11px] font-medium text-[#ceab7a] tracking-[0.2em] uppercase">Ready to Start?</span>
                </div>
-               <h2 className="text-[32px] md:text-[44px] lg:text-[48px] font-sans font-bold text-white mb-4 leading-[1.1]">
-                 Let's Build Something <br/>
-                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] to-[#a8824a]">Exceptional.</span>
+               <h2 className="text-[32px] md:text-[44px] lg:text-[48px] font-sans font-bold text-white mb-4 leading-[1.1] whitespace-pre-line">
+                 {footer_settings.ctaHeading.replace(/\\n/g, '\n')} <br/>
+                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] to-[#a8824a] whitespace-pre-line">{footer_settings.ctaHighlight.replace(/\\n/g, '\n')}</span>
                </h2>
                <p className="text-gray-400 text-[15px] leading-relaxed mb-8 max-w-[400px]">
-                 We create AI-powered digital experiences that help brands grow faster and stand out.
+                 {footer_settings.ctaDescription}
                </p>
                <div className="flex flex-col sm:flex-row gap-4 mb-6">
                  <a href="#contact" className="px-6 py-3.5 bg-gradient-to-r from-[#e8d3b5] to-[#ceab7a] hover:from-[#f0dfc8] hover:to-[#e8d3b5] text-black rounded-xl font-medium text-[15px] transition-all flex items-center justify-center gap-3 group">
@@ -55,19 +67,19 @@ export default function Footer() {
                    Start Your Project
                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                  </a>
-                 <a href="https://wa.me/917718938615" target="_blank" rel="noreferrer" className="px-6 py-3.5 border border-white/10 hover:border-[#ceab7a]/50 text-white rounded-xl font-medium text-[15px] transition-all flex items-center justify-center gap-3 hover:bg-white/5 group">
+                 <a href={`https://wa.me/${contact_settings.whatsapp}`} target="_blank" rel="noreferrer" className="px-6 py-3.5 border border-white/10 hover:border-[#ceab7a]/50 text-white rounded-xl font-medium text-[15px] transition-all flex items-center justify-center gap-3 hover:bg-white/5 group">
                    <MessageSquare size={18} className="text-[#ceab7a] group-hover:scale-110 transition-transform" />
                    Chat on WhatsApp
                  </a>
                </div>
                <p className="text-gray-500 text-[13px] flex items-center gap-2 justify-center sm:justify-start w-full sm:w-auto">
-                 Usually replies <span className="text-[#ceab7a]">within 1 hour</span> <Zap size={12} className="text-[#ceab7a] fill-[#ceab7a]" />
+                 {contact_settings.responseTime.includes('usually') ? contact_settings.responseTime : `Usually replies ${contact_settings.responseTime}`} <Zap size={12} className="text-[#ceab7a] fill-[#ceab7a]" />
                </p>
             </div>
             
             <div className="w-full lg:w-[45%] relative mt-12 lg:mt-0 flex justify-center lg:justify-end">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-[#ceab7a] rounded-full blur-[100px] opacity-10 pointer-events-none" />
-               <img src="/Assets/footer_ai_box.webp" alt="AI Metaworld Tech" className="w-full max-w-[320px] lg:max-w-[400px] object-contain drop-shadow-[0_0_30px_rgba(206,171,122,0.3)] relative z-10 mix-blend-screen" />
+               <img src={footer_settings.ctaImageUrl || "/Assets/cta_agency_composition.jpg"} alt="Ready to start CTA" className="w-full max-w-[320px] lg:max-w-[400px] object-cover rounded-2xl drop-shadow-[0_0_30px_rgba(206,171,122,0.3)] relative z-10" />
             </div>
           </motion.div>
 
@@ -82,32 +94,28 @@ export default function Footer() {
             {/* Column 1: Brand Area (Takes up more space) */}
             <motion.div variants={itemVariants} className="lg:col-span-3 lg:pr-6">
               <div className="flex items-center gap-4 mb-6">
-                <img src="/Assets/logo.webp" alt="AI Metaworld" className="w-12 h-12 object-contain" />
+                <img src={brand_settings.logoUrl || "/Assets/logo.webp"} alt={brand_settings.brandName || "Logo"} className="w-12 h-12 object-contain" />
                 <div className="flex flex-col">
-                  <span className="font-serif font-medium text-[20px] tracking-wide text-white uppercase">AI METAWORLD</span>
-                  <span className="text-[9px] text-[#ceab7a] tracking-[0.15em] font-medium uppercase">AI Powered Creative Agency</span>
+                  <span className="font-serif font-medium text-[20px] tracking-wide text-white uppercase">{brand_settings.brandName}</span>
+                  <span className="text-[9px] text-[#ceab7a] tracking-[0.15em] font-medium uppercase">{brand_settings.tagline}</span>
                 </div>
               </div>
               
               <p className="text-gray-400 text-[14px] leading-[1.8] mb-8">
-                We blend strategy, AI and cinematic design to create premium digital experiences that drive real results.
+                {footer_settings.description}
               </p>
 
               {/* Social Icons */}
-              <div className="flex gap-3">
-                {[
-                  { name: 'Instagram', href: 'https://instagram.com/ai_metaworld', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg> },
-                  { name: 'LinkedIn', href: 'https://www.linkedin.com/in/sohel-shaikhh/', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg> },
-                  { name: 'GitHub', href: 'https://github.com/Sohel-shaikh-dev', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.02c3.1-.34 6.33-1.55 6.33-6.99 0-1.5-.5-2.77-1.33-3.7.13-.31.5-1.75-.13-3.6 0 0-1-.31-3.3 1.2a11.5 11.5 0 0 0-6 0C7.2 1.69 6.2 2 6.2 2c-.63 1.85-.26 3.29-.13 3.6-1.83 2.1-1.33 3.7-1.33 3.7-5.44.44-6.33 1.65-6.33 6.99 0 1.5.5 2.77 1.33 3.7-.63 1.85.1 3.02 1 3.02v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg> },
-                  { name: 'Facebook', href: 'https://www.facebook.com/share/1asBpmQEbw/', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
-                  { name: 'YouTube', href: 'https://www.youtube.com/@Aimetaworld', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg> }
-                ].map((social) => (
-                  <a key={social.name} href={social.href} target="_blank" rel="noreferrer" aria-label={`Visit our ${social.name}`} className="w-11 h-11 rounded-xl border border-white/10 bg-[#0a0a0a] flex items-center justify-center text-gray-400 hover:border-[#ceab7a]/50 hover:text-[#ceab7a] hover:shadow-[0_0_15px_rgba(206,171,122,0.15)] transition-all group">
+              <div className="flex items-center gap-3">
+                {activeSocials.map((social) => {
+                  const SIcon = getSocialIcon(social.iconName);
+                  return (
+                    <a key={social.id} href={social.url} target="_blank" rel="noreferrer" aria-label={social.platform} className="w-11 h-11 rounded-xl border border-white/10 bg-[#0a0a0a] flex items-center justify-center text-gray-400 hover:border-[#ceab7a]/50 hover:text-[#ceab7a] hover:shadow-[0_0_15px_rgba(206,171,122,0.15)] transition-all group">
                      <div className="group-hover:scale-110 transition-transform">
-                       {social.icon}
+                       <SIcon size={16} strokeWidth={2} />
                      </div>
                   </a>
-                ))}
+                )})}
               </div>
             </motion.div>
 
@@ -150,19 +158,27 @@ export default function Footer() {
               <ul className="flex flex-col gap-5">
                 <li className="flex items-center gap-3">
                   <Mail size={16} className="text-[#ceab7a]" />
-                  <a href="mailto:aimetaworldd@gmail.com" className="text-gray-400 text-[13px] hover:text-[#ceab7a] transition-colors">aimetaworldd@gmail.com</a>
+                  <a href={`mailto:${contact_settings.email}`} className="text-gray-400 text-[13px] hover:text-[#ceab7a] transition-colors">{contact_settings.email}</a>
                 </li>
                 <li className="flex items-center gap-3">
                   <MessageSquare size={16} className="text-[#ceab7a]" />
-                  <a href="tel:+917718938615" className="text-gray-400 text-[13px] hover:text-[#ceab7a] transition-colors">+91 7718938615</a>
+                  <a href={`https://wa.me/${contact_settings.whatsapp}`} className="text-gray-400 text-[13px] hover:text-[#ceab7a] transition-colors">+{contact_settings.whatsapp}</a>
                 </li>
-                <li className="flex items-center gap-3">
-                  <MapPin size={16} className="text-[#ceab7a]" />
-                  <span className="text-gray-400 text-[13px]">Mumbai, India</span>
-                </li>
+                  <li>
+                    <a 
+                      href={contact_settings.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact_settings.address)}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-center gap-3 group/location cursor-pointer hover:bg-white/[0.02] p-1.5 -ml-1.5 rounded-lg transition-colors focus:outline-none focus:ring-1 focus:ring-[#ceab7a]/30"
+                      aria-label={`View ${contact_settings.address} on Google Maps`}
+                    >
+                      <MapPin size={16} className="text-[#ceab7a] shrink-0" />
+                      <span className="text-gray-400 text-[13px] group-hover/location:text-[#ceab7a]/80 transition-colors">{contact_settings.address}</span>
+                    </a>
+                  </li>
                 <li className="flex items-center gap-3">
                   <Clock size={16} className="text-[#ceab7a]" />
-                  <span className="text-gray-400 text-[13px]">Mon - Sat: 10AM - 8PM</span>
+                  <span className="text-gray-400 text-[13px]">{contact_settings.workingHours}</span>
                 </li>
               </ul>
             </motion.div>
@@ -201,22 +217,19 @@ export default function Footer() {
               <div className="hidden md:block absolute top-0 bottom-0 left-[50%] w-[1px] bg-white/5" />
               <div className="hidden md:block absolute top-0 bottom-0 left-[75%] w-[1px] bg-white/5" />
 
-              {[
-                { val: '15+', label: 'Projects Completed', icon: <Rocket size={24} className="text-[#ceab7a]" /> },
-                { val: '8+', label: 'Brands Empowered', icon: <Users size={24} className="text-[#ceab7a]" /> },
-                { val: '2+', label: 'Years of Experience', icon: <Clock size={24} className="text-[#ceab7a]" /> },
-                { val: '24h', label: 'Avg. Response Time', icon: <ShieldCheck size={24} className="text-[#ceab7a]" /> }
-              ].map((stat, i) => (
-                <div key={i} className="flex flex-col sm:flex-row items-center sm:items-start justify-center md:justify-start gap-4 px-2 lg:px-6">
+              {activeStats.map((stat) => {
+                const SIcon = StatIconMap[stat.iconName] || Star;
+                return (
+                  <div key={stat.id} className="relative group flex flex-col sm:flex-row items-center sm:items-start justify-center md:justify-start gap-4 px-2 lg:px-6">
                   <div className="w-12 h-12 rounded-full border border-[#ceab7a]/20 bg-[#ceab7a]/5 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(206,171,122,0.1)]">
-                    {stat.icon}
+                    <SIcon size={24} className="text-[#ceab7a]" />
                   </div>
                   <div className="flex flex-col text-center sm:text-left">
-                    <span className="text-[26px] font-sans font-bold text-white leading-tight">{stat.val}</span>
-                    <span className="text-[12px] text-gray-500 font-medium tracking-wide uppercase mt-1">{stat.label}</span>
+                    <span className="text-[26px] font-sans font-bold text-white leading-tight">{stat.value}</span>
+                    <span className="text-[12px] text-gray-500 font-medium tracking-wide uppercase mt-1 whitespace-pre-line">{stat.label}</span>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           </motion.div>
 
@@ -230,7 +243,7 @@ export default function Footer() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-[#ceab7a] rounded-full blur-[8px] opacity-30" />
 
             <p className="text-gray-500 text-[13px] tracking-wide font-light">
-              &copy; {new Date().getFullYear()} AI Metaworld. All rights reserved.
+              &copy; {new Date().getFullYear()} {brand_settings.brandName}. All rights reserved.
             </p>
             
             <div className="flex items-center gap-6">

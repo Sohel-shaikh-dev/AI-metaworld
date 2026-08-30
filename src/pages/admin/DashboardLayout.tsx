@@ -1,17 +1,64 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { LayoutDashboard, FolderKanban, Settings, LogOut, ExternalLink } from 'lucide-react';
+import { useSettings } from '../../contexts/SettingsContext';
+import { supabase } from '../../lib/supabase';
+import { LayoutDashboard, FolderKanban, LogOut, ExternalLink, Palette, Sparkles, User, BarChart, Phone, Share, PanelBottom, Settings, Inbox } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function DashboardLayout() {
   const { signOut, user } = useAuth();
   const location = useLocation();
 
-  const navItems = [
-    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { name: 'Projects', path: '/admin/projects', icon: FolderKanban },
+  const { requestNavigation } = useSettings();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { count, error } = await supabase
+        .from('contact_messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'unread')
+        .eq('is_archived', false);
+      
+      if (!error && count !== null) {
+        setUnreadCount(count);
+      }
+    };
+    
+    fetchUnreadCount();
+
+    const channel = supabase
+      .channel('public:contact_messages')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'contact_messages' },
+        () => { fetchUnreadCount(); }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const managementNavItems = [
+    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard, exact: true },
+    { name: 'Projects', path: '/admin/projects', icon: FolderKanban, exact: false },
+    { name: 'Messages', path: '/admin/messages', icon: Inbox, exact: false },
+  ];
+
+  const settingsNavItems = [
+    { name: 'Brand', path: '/admin/brand', icon: Palette },
+    { name: 'Hero', path: '/admin/hero', icon: Sparkles },
+    { name: 'About', path: '/admin/about', icon: User },
+    { name: 'Stats', path: '/admin/stats', icon: BarChart },
+    { name: 'Contact', path: '/admin/contact', icon: Phone },
+    { name: 'Social', path: '/admin/social', icon: Share },
+    { name: 'Footer', path: '/admin/footer', icon: PanelBottom },
     { name: 'Settings', path: '/admin/settings', icon: Settings },
   ];
+
 
   return (
     <div className="flex h-screen bg-[#050505] text-white font-sans overflow-hidden">
@@ -23,22 +70,51 @@ export default function DashboardLayout() {
       >
         <div>
           <div className="p-6 border-b border-white/5 flex items-center justify-between">
-            <Link to="/admin" className="flex items-center gap-3">
+            <a href="/admin" onClick={(e) => { e.preventDefault(); requestNavigation('/admin'); }} className="flex items-center gap-3">
               <img src="/Assets/logo.webp" alt="Logo" className="w-8 h-8 object-contain" />
               <span className="font-serif text-lg tracking-tight">AI Metaworld</span>
-            </Link>
+            </a>
           </div>
           
-          <div className="p-4 space-y-1 mt-4">
+          <div className="p-4 space-y-1 mt-2 flex-1 overflow-y-auto custom-scrollbar">
             <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">Management</p>
-            {navItems.map((item) => {
+            {managementNavItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
+              const isActive = item.exact ? location.pathname === item.path : location.pathname.startsWith(item.path);
               return (
-                <Link
+                <a
                   key={item.name}
-                  to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 text-sm ${
+                  href={item.path}
+                  onClick={(e) => { e.preventDefault(); requestNavigation(item.path); }}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 text-sm ${
+                    isActive 
+                      ? 'bg-[#ceab7a]/10 text-[#ceab7a] font-medium border border-[#ceab7a]/20' 
+                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon size={18} className={isActive ? 'text-[#ceab7a]' : 'text-gray-400'} />
+                    {item.name}
+                  </div>
+                  {item.name === 'Messages' && unreadCount > 0 && (
+                    <span className="bg-[#ceab7a] text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      {unreadCount}
+                    </span>
+                  )}
+                </a>
+              );
+            })}
+
+            <p className="px-4 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 mt-6">Settings</p>
+            {settingsNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+              return (
+                <a
+                  key={item.name}
+                  href={item.path}
+                  onClick={(e) => { e.preventDefault(); requestNavigation(item.path); }}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-300 text-sm ${
                     isActive 
                       ? 'bg-[#ceab7a]/10 text-[#ceab7a] font-medium border border-[#ceab7a]/20' 
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
@@ -46,7 +122,7 @@ export default function DashboardLayout() {
                 >
                   <Icon size={18} className={isActive ? 'text-[#ceab7a]' : 'text-gray-400'} />
                   {item.name}
-                </Link>
+                </a>
               );
             })}
           </div>
@@ -70,7 +146,7 @@ export default function DashboardLayout() {
             <ExternalLink size={16} /> View Live Site
           </Link>
           <button 
-            onClick={signOut}
+            onClick={() => requestNavigation(signOut)}
             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-xl transition-colors mt-1"
           >
             <LogOut size={16} /> Sign Out

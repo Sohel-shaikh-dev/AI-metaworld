@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
+import { useSettings } from '../contexts/SettingsContext';
 
 export default function FloatingWhatsApp() {
-  const waNumber = "917718938615";
+  const { settings } = useSettings();
+  const waNumber = settings.contact_settings.whatsapp;
   const waMessage = `Hello AI Metaworld,\n\nI visited your website and I’m interested in your services.\nI would like to discuss my project.`;
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
 

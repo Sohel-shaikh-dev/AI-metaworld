@@ -27,9 +27,12 @@ import {
   Check,
   Shield
 } from 'lucide-react';
-import { useTypewriter } from '../hooks/useTypewriter';
-import { SparkleInput } from './SparkleInput';
+
+import { AnimatedSparkleInput, AnimatedSelect, AnimatedTextarea } from './AnimatedPlaceholders';
 import CinematicTypewriter from './CinematicTypewriter';
+
+import { useSettings } from '../contexts/SettingsContext';
+import { supabase } from '../lib/supabase';
 
 export default function Contact() {
   const containerVariants: Variants = {
@@ -42,27 +45,16 @@ export default function Contact() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
-  const [isProjectFocused, setIsProjectFocused] = useState(false);
-  const [projectText, setProjectText] = useState("");
-
-  const projectPlaceholder = useTypewriter({
-    words: [
-      "Tell us about your project, goals and requirements...",
-      "What are you planning to build?",
-      "Describe the digital experience you need..."
-    ],
-    typingSpeed: 60,
-    deletingSpeed: 30,
-    delayPause: 4000,
-    loop: true,
-    isPaused: isProjectFocused || projectText.length > 0
-  });
+  const { settings } = useSettings();
+  const { contact_settings } = settings;
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [phone, setPhone] = useState("");
   const [service, setService] = useState("");
+  const [projectText, setProjectText] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -78,7 +70,33 @@ export default function Contact() {
     setErrorMsg("");
 
     try {
-      // NOTE: User must replace this key with their actual Web3Forms access key
+      console.log("1. Form submission started");
+      const payload = {
+        name,
+        email,
+        phone: phone ? `+91 ${phone}` : null,
+        business_name: businessName || null,
+        service,
+        message: projectText,
+        status: 'unread'
+      };
+      console.log("2. Supabase INSERT payload:", payload);
+
+      // 1. Save to Supabase (contact_messages CRM)
+      // IMPORTANT: Do NOT use .select() here! The anonymous user does not have SELECT permissions.
+      // Using .select() will cause PostgREST to rollback the insert with a 401 RLS violation.
+      const { error: dbError } = await supabase
+        .from('contact_messages')
+        .insert([payload]);
+        
+      if (dbError) {
+        console.error("4. Supabase INSERT error:", dbError);
+        // We will continue to Web3Forms as a fallback even if DB fails, to preserve business flow
+      } else {
+        console.log("4. Supabase INSERT successful");
+      }
+
+      // 2. Existing Web3Forms Email Notification
       const WEB3FORMS_ACCESS_KEY = "ffa2b02d-88c0-49b3-af30-282cda01cbd6";
 
       const response = await fetch("https://api.web3forms.com/submit", {
@@ -101,7 +119,8 @@ export default function Contact() {
       });
 
       const result = await response.json();
-      if (result.success) {
+      if (result.success || !dbError) {
+        // If either succeeded, we treat it as a success for the user to avoid losing leads silently
         setIsSuccess(true);
         setName("");
         setEmail("");
@@ -113,6 +132,7 @@ export default function Contact() {
         setErrorMsg(result.message || "Something went wrong. Please try again.");
       }
     } catch (error) {
+      console.error(error);
       setErrorMsg("Network error. Please try again later.");
     } finally {
       setIsSubmitting(false);
@@ -120,7 +140,7 @@ export default function Contact() {
   };
 
   // --- WHATSAPP CONFIGURATION ---
-  const waNumber = "917718938615";
+  const waNumber = contact_settings.whatsapp;
   const waMessage = `Hello AI Metaworld,\n\nI visited your website and I'm interested in your services.\nI would like to discuss my project with you.`;
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
 
@@ -220,7 +240,7 @@ export default function Contact() {
                   Chat on WhatsApp
               </a>
               <p className="text-gray-500 text-[12px] text-center mb-8 flex items-center justify-center gap-2 relative z-10">
-                Usually replies <span className="text-[#ceab7a]">within 1 hour</span> <Zap size={10} className="text-[#ceab7a] fill-[#ceab7a]"/>
+                {contact_settings.responseTime.includes('usually') ? contact_settings.responseTime : `Usually replies ${contact_settings.responseTime}`} <Zap size={10} className="text-[#ceab7a] fill-[#ceab7a]"/>
               </p>
 
               <div className="flex flex-col gap-5 pt-6 border-t border-white/5 relative z-10">
@@ -230,7 +250,7 @@ export default function Contact() {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[12px] text-gray-500">Email Us</span>
-                        <a href="mailto:aimetaworldd@gmail.com" className="text-[14px] text-gray-300 hover:text-[#ceab7a] transition-colors">aimetaworldd@gmail.com</a>
+                        <a href={`mailto:${contact_settings.email}`} className="text-[14px] text-gray-300 hover:text-[#ceab7a] transition-colors">{contact_settings.email}</a>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 group/contact">
@@ -239,18 +259,27 @@ export default function Contact() {
                     </div>
                     <div className="flex flex-col">
                         <span className="text-[12px] text-gray-500">Working Hours</span>
-                        <span className="text-[14px] text-gray-300">Mon - Sat : 10AM - 8PM</span>
+                        <span className="text-[14px] text-gray-300">{contact_settings.workingHours}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 group/contact">
-                    <div className="w-10 h-10 rounded-full border border-white/5 bg-[#111] flex items-center justify-center group-hover/contact:border-[#ceab7a]/30 transition-colors">
-                        <MapPin size={16} className="text-[#ceab7a]" />
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-[12px] text-gray-500">Location</span>
-                        <span className="text-[14px] text-gray-300">Mumbai, India 🇮🇳</span>
-                    </div>
-                  </div>
+                    <a 
+                      href={contact_settings.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(contact_settings.address)}`} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="flex items-start gap-4 group/contact cursor-pointer p-3 -ml-3 rounded-xl hover:bg-white/[0.02] transition-all focus:outline-none focus:ring-1 focus:ring-[#ceab7a]/30"
+                      aria-label={`View ${contact_settings.address} on Google Maps`}
+                    >
+                      <div className="w-10 h-10 rounded-full border border-white/5 bg-[#111] flex items-center justify-center group-hover/contact:border-[#ceab7a]/30 group-hover/contact:shadow-[0_0_15px_rgba(206,171,122,0.15)] transition-all shrink-0">
+                          <MapPin size={16} className="text-[#ceab7a]" />
+                      </div>
+                      <div className="flex flex-col pt-0.5">
+                        <span className="text-[12px] text-gray-500 mb-0.5">Location</span>
+                        <span className="text-[14px] text-gray-300 group-hover/contact:text-white transition-colors leading-snug max-w-[250px]">{contact_settings.address}</span>
+                        <span className="text-[12px] font-medium text-[#ceab7a] flex items-center gap-1.5 mt-2 group-hover/contact:translate-x-1 transition-transform">
+                          View on Map <ArrowRight size={12} />
+                        </span>
+                      </div>
+                    </a>
               </div>
             </motion.div>
           </motion.div>
@@ -293,7 +322,7 @@ export default function Contact() {
                   {/* Reply Pill */}
                   <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#ceab7a]/30 bg-[#ceab7a]/5 shadow-[0_0_15px_rgba(206,171,122,0.1)]">
                     <Zap size={14} className="text-[#ceab7a] fill-[#ceab7a]" />
-                    <span className="text-[#ceab7a] text-[13px] font-medium tracking-wide">Usually replies within 1 hour</span>
+                    <span className="text-[#ceab7a] text-[13px] font-medium tracking-wide">{contact_settings.responseTime.includes('usually') ? contact_settings.responseTime : `Usually replies ${contact_settings.responseTime}`}</span>
                   </div>
 
                   {/* What Happens Next Timeline */}
@@ -397,13 +426,13 @@ export default function Contact() {
                   <div className="space-y-3">
                     <label className="text-[13px] font-medium text-white tracking-wide">Full Name</label>
                     <div className="relative">
-                      <SparkleInput
+                      <AnimatedSparkleInput
                         as="input"
                         type="text"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e: any) => setName(e.target.value)}
                         required
-                        placeholder="Enter your full name"
+                        placeholderWords="Enter your full name"
                         className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-6 pr-12 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300"
                       />
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -416,13 +445,13 @@ export default function Contact() {
                   <div className="space-y-3">
                     <label className="text-[13px] font-medium text-white tracking-wide">Email Address</label>
                     <div className="relative">
-                      <SparkleInput
+                      <AnimatedSparkleInput
                         as="input"
                         type="email"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e: any) => setEmail(e.target.value)}
                         required
-                        placeholder="Enter your email address"
+                        placeholderWords="Enter your email address"
                         className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-6 pr-12 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300"
                       />
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -435,12 +464,12 @@ export default function Contact() {
                   <div className="space-y-3">
                     <label className="text-[13px] font-medium text-white tracking-wide">Business / Brand Name</label>
                     <div className="relative">
-                      <SparkleInput
+                      <AnimatedSparkleInput
                         as="input"
                         type="text"
                         value={businessName}
-                        onChange={(e) => setBusinessName(e.target.value)}
-                        placeholder="Enter your business or brand name"
+                        onChange={(e: any) => setBusinessName(e.target.value)}
+                        placeholderWords="Enter your business or brand name"
                         className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-6 pr-12 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300"
                       />
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -458,15 +487,15 @@ export default function Contact() {
                           <span className="text-white text-[14px]">+91</span>
                           <ChevronDown size={14} className="text-gray-500" />
                       </div>
-                      <SparkleInput
+                      <AnimatedSparkleInput
                         as="input"
                         type="tel"
                         value={phone}
-                        onChange={(e) => {
+                        onChange={(e: any) => {
                           const val = e.target.value.replace(/\D/g, '');
                           if (val.length <= 10) setPhone(val);
                         }}
-                        placeholder="Enter your WhatsApp number"
+                        placeholderWords="Enter your WhatsApp number"
                         className="w-full pl-[110px] pr-12 bg-[#050505] border border-white/10 rounded-[16px] px-6 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300"
                       />
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -479,19 +508,19 @@ export default function Contact() {
                   <div className="space-y-3">
                     <label className="text-[13px] font-medium text-white tracking-wide">Service Needed</label>
                     <div className="relative">
-                      <select
+                      <AnimatedSelect
                         value={service}
                         onChange={(e) => setService(e.target.value)}
+                        placeholderWords="Select the service you need"
                         className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-6 pr-12 py-4 text-white focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300 appearance-none cursor-pointer"
                       >
-                        <option value="" className="bg-[#050505] text-gray-400">Select the service you need</option>
                         <option value="website" className="bg-[#0a0a0a]">Website Design & Development</option>
                         <option value="branding" className="bg-[#0a0a0a]">Branding & Logo Design</option>
                         <option value="aifashion" className="bg-[#0a0a0a]">AI Fashion Try-On</option>
                         <option value="powerbi" className="bg-[#0a0a0a]">Power BI Data Analysis</option>
                         <option value="print" className="bg-[#0a0a0a]">Print-On-Demand Solutions</option>
                         <option value="all" className="bg-[#0a0a0a]">Complete Digital Ecosystem</option>
-                      </select>
+                      </AnimatedSelect>
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none">
                         <ChevronDown size={18} className="text-gray-500" />
                       </div>
@@ -502,30 +531,18 @@ export default function Contact() {
                   <div className="space-y-3">
                     <label className="text-[13px] font-medium text-white tracking-wide">Project Details</label>
                     <div className="relative">
-                      <SparkleInput
-                        as="textarea"
+                      <AnimatedTextarea
                         rows={4}
                         required
                         value={projectText}
-                        onChange={(e) => setProjectText(e.target.value)}
-                        onFocus={() => setIsProjectFocused(true)}
-                        onBlur={() => setIsProjectFocused(false)}
-                        placeholder={projectPlaceholder}
+                        onChange={(e: any) => setProjectText(e.target.value)}
+                        placeholderWords={[
+                          "Tell us about your project, goals and requirements...",
+                          "What are you planning to build?",
+                          "Describe the digital experience you need..."
+                        ]}
                         className="w-full bg-[#050505] border border-white/10 rounded-[16px] px-6 py-5 text-white placeholder-gray-600 focus:outline-none focus:border-[#ceab7a]/50 focus:shadow-[0_0_20px_rgba(206,171,122,0.1)] transition-all duration-300 resize-none"
                       />
-                      {!isProjectFocused && projectText.length === 0 && (
-                        <motion.span
-                          animate={{ opacity: [1, 0] }}
-                          transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
-                          className="absolute text-[#ceab7a] pointer-events-none"
-                          style={{
-                            top: '20px',
-                            left: `calc(1.5rem + ${projectPlaceholder.length * 7.2}px)`
-                          }}
-                        >
-                          |
-                        </motion.span>
-                      )}
                       <div className="absolute right-4 bottom-4 pointer-events-none">
                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-gray-600">
                            <path d="M9 1L1 9M9 5L5 9M5 1L1 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

@@ -1,9 +1,17 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Play, Zap, Monitor, PenTool, Video, BarChart3, Shirt, Rocket, Star, Calendar, Sparkles } from 'lucide-react';
+import { ArrowRight, Play, Zap, Monitor, PenTool, Video, BarChart3, Shirt, Rocket, Star, Calendar, Sparkles, BriefcaseBusiness, Users, Clock, Smartphone } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
+import { useSettings } from '../contexts/SettingsContext';
+
+const IconMap: Record<string, any> = {
+  Rocket, Star, Calendar, Zap, BriefcaseBusiness, Users, Clock, Smartphone
+};
 
 const Hero = memo(function Hero() {
+  const { settings } = useSettings();
+  const { hero_settings, stats_settings } = settings;
+  const activeStats = stats_settings.filter(s => s.active).sort((a, b) => a.order - b.order);
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     const el = document.getElementById(targetId);
@@ -46,7 +54,7 @@ const Hero = memo(function Hero() {
           >
             <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
             <span className="text-[10px] sm:text-[11px] font-semibold text-white tracking-[0.15em] uppercase">
-              Available for New Projects
+              {hero_settings.eyebrow}
             </span>
           </motion.div>
 
@@ -57,15 +65,10 @@ const Hero = memo(function Hero() {
             transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
             className="text-[2.5rem] leading-[1.1] sm:text-[3.5rem] md:text-[3.8rem] lg:text-[4.5rem] font-bold md:leading-[1.05] tracking-tight mb-6 min-h-[140px] sm:min-h-[160px] md:min-h-[180px]"
           >
-            <span className="block text-white pb-2">We Build</span>
+            <span className="block text-white pb-2">{hero_settings.headlineStatic}</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] pb-2 lg:pb-4 min-h-[2.6em] whitespace-pre-wrap">
               <CinematicTypewriter 
-                words={[
-                  "AI-Powered\nCreative Systems.",
-                  "Premium\nDigital Experiences.",
-                  "Luxury\nWebsite Design.",
-                  "Modern\nBrand Identity."
-                ]}
+                words={hero_settings.typewriterWords.length > 0 ? hero_settings.typewriterWords : [hero_settings.headlineHighlight]}
                 typingSpeed={85}
                 deletingSpeed={45}
                 delayPause={3000}
@@ -81,7 +84,7 @@ const Hero = memo(function Hero() {
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             className="text-[17px] sm:text-[18px] text-gray-400 leading-[1.6] mb-8 max-w-[550px] font-medium"
           >
-            Websites, branding, AI videos, and digital systems designed for modern businesses.
+            {hero_settings.description}
           </motion.p>
 
           {/* Accent Line */}
@@ -102,25 +105,24 @@ const Hero = memo(function Hero() {
             <motion.a 
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              href="#contact" 
-              onClick={(e) => handleScrollTo(e, 'contact')}
+              href={hero_settings.primaryCtaUrl} 
+              onClick={(e) => handleScrollTo(e, hero_settings.primaryCtaUrl.replace('#', ''))}
               className="group flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black text-[14px] sm:text-[15px] font-bold tracking-[0.02em] rounded-xl shadow-[0_0_20px_rgba(206,171,122,0.3)] transition-all flex-1 sm:flex-none whitespace-nowrap min-w-[160px]"
             >
-              Start a Project <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              {hero_settings.primaryCtaText} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </motion.a>
 
             <motion.a 
               whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.03)' }}
               whileTap={{ scale: 0.98 }}
-              href="#process" 
-              onClick={(e) => handleScrollTo(e, 'process')}
+              href={hero_settings.secondaryCtaUrl} 
+              onClick={(e) => handleScrollTo(e, hero_settings.secondaryCtaUrl.replace('#', ''))}
               className="group flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 bg-transparent border border-[#ceab7a]/50 text-white text-[14px] sm:text-[15px] font-medium tracking-[0.02em] rounded-xl transition-all flex-1 sm:flex-none whitespace-nowrap min-w-[160px] hover:border-[#ceab7a]"
             >
-              <Play size={18} className="text-[#ceab7a]" fill="currentColor" fillOpacity={0.2} /> Our Process
+              <Play size={18} className="text-[#ceab7a]" fill="currentColor" fillOpacity={0.2} /> {hero_settings.secondaryCtaText}
             </motion.a>
           </motion.div>
 
-          {/* Trust Text */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -128,7 +130,7 @@ const Hero = memo(function Hero() {
             className="flex items-center gap-2 mb-12 md:mb-24"
           >
             <Zap size={16} className="text-[#ceab7a] fill-[#ceab7a]" />
-            <span className="text-[13px] text-gray-400 font-medium">Usually replies within 1 hour</span>
+            <span className="text-[13px] text-gray-400 font-medium">{hero_settings.trustMicrocopy}</span>
           </motion.div>
 
         </motion.div>
@@ -161,22 +163,19 @@ const Hero = memo(function Hero() {
           transition={{ duration: 0.8, delay: 0.6 }}
           className="w-full flex flex-col gap-6"
         >
-          {/* Stats Box */}
-          <div className="w-full rounded-2xl border border-[#ceab7a]/20 bg-[#0a0a0a]/80 p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 shadow-[0_0_30px_rgba(206,171,122,0.03)]">
-            {[
-              { icon: Rocket, value: '15+', label: 'Projects\nCompleted' },
-              { icon: Star, value: '8+', label: 'Brands\nEmpowered' },
-              { icon: Calendar, value: '2+', label: 'Years of\nExperience' },
-              { icon: Zap, value: '24h', label: 'Avg. Response\nTime' }
-            ].map((stat, idx) => (
-              <div key={idx} className="flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left md:border-r border-[#ceab7a]/10 last:border-0 px-2">
-                <stat.icon size={32} className="text-[#ceab7a] shrink-0" strokeWidth={1.5} />
+          <div className="w-full rounded-2xl border border-[#ceab7a]/20 bg-[#0a0a0a]/80 p-6 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 shadow-[0_0_30px_rgba(206,171,122,0.03)]"
+               style={{ gridTemplateColumns: `repeat(auto-fit, minmax(140px, 1fr))` }}>
+            {activeStats.map((stat) => {
+              const SIcon = IconMap[stat.iconName] || Star;
+              return (
+              <div key={stat.id} className="flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left md:border-r border-[#ceab7a]/10 last:border-0 px-2">
+                <SIcon size={32} className="text-[#ceab7a] shrink-0" strokeWidth={1.5} />
                 <div>
                   <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
                   <div className="text-[12px] text-gray-400 font-medium whitespace-pre-line leading-tight">{stat.label}</div>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
 
           {/* Banner Box */}
@@ -184,8 +183,8 @@ const Hero = memo(function Hero() {
             <div className="flex items-center gap-4 flex-1 justify-center md:justify-start">
               <Sparkles size={28} className="text-[#ceab7a] fill-[#ceab7a]/20 shrink-0" />
               <div className="flex flex-col">
-                <span className="text-xl text-white font-medium">We create</span>
-                <span className="text-xl text-[#ceab7a] font-bold">AI-Powered Websites.</span>
+                <span className="text-xl text-white font-medium">{hero_settings.bannerPrefix}</span>
+                <span className="text-xl text-[#ceab7a] font-bold">{hero_settings.bannerHighlight}</span>
               </div>
             </div>
             
@@ -193,9 +192,8 @@ const Hero = memo(function Hero() {
             <div className="md:hidden w-full h-px bg-[#ceab7a]/20"></div>
 
             <div className="flex-1 flex items-center justify-center md:justify-start">
-              <p className="text-[14px] text-gray-400 font-medium text-center md:text-left max-w-sm">
-                Smart solutions. Scalable systems. <br/>
-                Powered by creativity and AI.
+              <p className="text-[14px] text-gray-400 font-medium text-center md:text-left max-w-sm whitespace-pre-line">
+                {hero_settings.bannerSuffix.replace(/\\n/g, '\n')}
               </p>
             </div>
           </div>

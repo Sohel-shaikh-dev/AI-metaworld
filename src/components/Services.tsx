@@ -3,8 +3,8 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { 
-  MonitorSmartphone, PenTool, BarChart3, Shirt, ArrowRight, Star, Zap, ShieldCheck, Sparkles,
-  X, CheckCircle2, MessageCircle, Cpu, Search, Code, Rocket, Palette, Package, Settings, Lightbulb, Check, Database, Table, PieChart, TrendingUp, Download, Image as ImageIcon, ZapIcon
+  MonitorSmartphone, PenTool, BarChart3, Shirt, ArrowRight, Star, Zap, Sparkles,
+  X, CheckCircle2, MessageCircle, Cpu, Search, Code, Rocket, Palette, Package, Lightbulb, Check, Database, Table, PieChart, TrendingUp, Download, Image as ImageIcon, ZapIcon
 } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
 
@@ -16,6 +16,12 @@ const services = [
     modalTitle: "Web Design &\nDevelopment",
     desc: "We create stunning, high-performance websites that not only look exceptional but also drive results.",
     img: "/Assets/service_modal_web.webp",
+    gallery: [
+      "/Assets/service_modal_web.webp",
+      "/Assets/service_web.webp",
+      "/Assets/p_website.webp",
+      "/Assets/p_website_new.webp"
+    ],
     inclusions: [
       "Custom Website Design", "Fast & Optimized Performance",
       "Responsive for All Devices", "CMS / Admin Panel",
@@ -40,6 +46,12 @@ const services = [
     modalTitle: "Branding &\nGraphic Design",
     desc: "We create unique visual identities that tell your brand story and leave a lasting impression.",
     img: "/Assets/service_modal_branding.webp",
+    gallery: [
+      "/Assets/service_modal_branding.webp",
+      "/Assets/service_branding.webp",
+      "/Assets/p_branding.webp",
+      "/Assets/p_branding_new.webp"
+    ],
     inclusions: [
       "Logo Design & Identity", "Social Media Kit Design",
       "Brand Guidelines", "Packaging Design",
@@ -60,49 +72,61 @@ const services = [
   {
     icon: Shirt,
     id: "03",
-    title: "Print On Demand\nStore Setup",
-    modalTitle: "Print On Demand\nStore Setup",
-    desc: "We set up and optimize Print On Demand stores that are ready to sell and scale.",
-    img: "/Assets/service_modal_pod.webp",
+    title: "Print On Demand\nCustom Printing",
+    modalTitle: "Print On Demand\nCustom Printing",
+    desc: "We create custom printed products based on your design, idea, or requirement — from T-shirts and mugs to personalized merchandise.",
+    img: "/Assets/service_modal_pod_custom.jpg",
+    gallery: [
+      "/Assets/service_modal_pod_custom.jpg",
+      "/Assets/pod_tshirt.jpg",
+      "/Assets/pod_mug.jpg",
+      "/Assets/pod_phone.jpg"
+    ],
     inclusions: [
-      "Store Setup (Shopify)", "Printful / Printify Setup",
-      "Product Research", "Payment & Shipping Setup",
-      "Premium Store Design", "App Integration"
+      "Custom Design Printing", "T-Shirt Printing",
+      "Mug & Cup Printing", "Phone Cover Printing",
+      "Personalized Merchandise", "Quality Print Finishing"
     ],
     process: [
-      { icon: Search, title: "Discovery", desc: "Niche & market research" },
-      { icon: Settings, title: "Setup", desc: "Store & product configuration" },
-      { icon: Palette, title: "Design", desc: "Store customization & branding" },
-      { icon: Rocket, title: "Launch", desc: "Go live & start selling" }
+      { icon: MessageCircle, title: "Share Your Idea", desc: "Send your design, image, text, or printing requirement." },
+      { icon: Palette, title: "Design & Preview", desc: "We prepare the artwork and confirm how it will look on the product." },
+      { icon: Shirt, title: "Print", desc: "Your approved design is printed on the selected product." },
+      { icon: Package, title: "Ready to Deliver", desc: "The finished customized product is prepared and delivered/handed over as agreed." }
     ],
     highlights: [
-      { icon: Star, title: "Winning Products", desc: "High-Profit Potential" },
-      { icon: Zap, title: "Fast Store Setup", desc: "5-7 Working Days" },
-      { icon: ShieldCheck, title: "Full Support", desc: "After Launch Support" }
+      { icon: Palette, title: "Custom Designs", desc: "Printed to your requirement" },
+      { icon: CheckCircle2, title: "Quality Printing", desc: "Clean and professional finish" },
+      { icon: Package, title: "Multiple Products", desc: "T-Shirts, Mugs, Covers & More" }
     ]
   },
   {
     icon: Cpu,
     id: "04",
-    title: "AI Content &\nImage Generation",
-    modalTitle: "AI Content &\nImage Generation",
-    desc: "High-quality AI generated content and images tailored to your brand and business.",
-    img: "/Assets/service_modal_aicontent.webp",
+    title: "AI Fashion &\nBrand Content",
+    modalTitle: "AI Fashion &\nBrand Content",
+    desc: "We create AI-powered fashion and product visuals that showcase your products through realistic models, promotional videos, and brand-focused content.",
+    img: "/Assets/ai_fashion_tryon.jpg",
+    gallery: [
+      "/Assets/ai_fashion_tryon.jpg",
+      "/Assets/ai_product_vis.jpg",
+      "/Assets/ai_brand_campaign.jpg",
+      "/Assets/ai_promo_video.jpg"
+    ],
     inclusions: [
-      "AI Blog Articles", "AI Image Generation",
-      "AI Product Descriptions", "AI Ad Copy",
-      "AI Social Media Content", "Custom AI Prompts"
+      "Fashion Try-On Visuals", "Product Showcase Images",
+      "Model-Based Photography", "Promotional Video Content",
+      "Brand Campaign Creatives", "Social Media Visuals"
     ],
     process: [
-      { icon: Search, title: "Discovery", desc: "Understanding your requirements" },
-      { icon: Cpu, title: "Generate", desc: "AI content & images creation" },
-      { icon: PenTool, title: "Refine", desc: "Editing & optimizing output" },
-      { icon: Download, title: "Deliver", desc: "High-quality final delivery" }
+      { icon: Search, title: "Product Upload", desc: "Client shares product images and brand requirements." },
+      { icon: Cpu, title: "AI Visualization", desc: "We create suitable AI models, scenes, and product visuals around the provided product." },
+      { icon: PenTool, title: "Creative Production", desc: "We create polished images and promotional video content for the brand." },
+      { icon: Download, title: "Final Delivery", desc: "Ready-to-use visuals are delivered for marketing, social media, and promotional campaigns." }
     ],
     highlights: [
-      { icon: Star, title: "100% Original", desc: "Unique AI Content" },
-      { icon: Search, title: "SEO Friendly Content", desc: "Rank Higher" },
-      { icon: ImageIcon, title: "High Quality Images", desc: "HD & Commercial Use" }
+      { icon: Star, title: "Realistic AI Visuals", desc: "Professional product & fashion presentation" },
+      { icon: ImageIcon, title: "Image + Video Content", desc: "From product visuals to promotional videos" },
+      { icon: CheckCircle2, title: "Brand Focused", desc: "Content created around your brand identity" }
     ]
   },
   {
@@ -111,7 +135,12 @@ const services = [
     title: "Power BI\nDashboards",
     modalTitle: "Power BI\nDashboards",
     desc: "We create interactive Power BI dashboards that turn data into powerful insights.",
-    img: "/Assets/service_modal_powerbi.webp",
+    img: "/Assets/powerbi-real-dashboard.jpg",
+    gallery: [
+      "/Assets/powerbi-real-dashboard.jpg",
+      "/Assets/powerbi-churn-dashboard.jpg",
+      "/Assets/powerbi-hr-dashboard.jpg"
+    ],
     inclusions: [
       "Interactive Dashboards", "Real-time Insights",
       "Data Modeling", "KPI Tracking",
@@ -133,13 +162,16 @@ const services = [
 
 export default function Services() {
   const [selectedService, setSelectedService] = useState<typeof services[0] | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Prevent background scrolling when modal is open
+  // Prevent background scrolling when modal is open and reset image state
   useEffect(() => {
     if (selectedService) {
       document.body.style.overflow = 'hidden';
+      setSelectedImage(selectedService.gallery[0] || selectedService.img);
     } else {
       document.body.style.overflow = 'auto';
+      setSelectedImage(null);
     }
     return () => {
       document.body.style.overflow = 'auto';
@@ -239,7 +271,7 @@ export default function Services() {
                  <img 
                    src={service.img} 
                    alt={service.title.replace('\n', ' ')} 
-                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" 
+                   className={`w-full h-full object-center group-hover:scale-105 transition-transform duration-700 ${service.id === "05" ? 'object-contain' : 'object-cover'}`} 
                  />
               </div>
             </motion.div>
@@ -298,19 +330,28 @@ export default function Services() {
                 {/* Main Large Image */}
                 <div className="w-full aspect-[4/3] rounded-[16px] overflow-hidden border border-white/5 relative group">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
-                  <img src={selectedService.img} alt={selectedService.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={selectedImage || selectedService.img} alt={selectedService.title} className={`w-full h-full group-hover:scale-105 transition-transform duration-700 ${selectedService.id === "05" ? 'object-contain' : 'object-cover'}`} />
                 </div>
                 {/* Thumbnails Row */}
                 <div className="grid grid-cols-4 gap-3 md:gap-4">
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="aspect-square rounded-[12px] overflow-hidden border border-white/5 relative cursor-pointer hover:border-[#ceab7a]/50 transition-colors">
+                  {selectedService.gallery?.map((imgSrc, i) => (
+                    <div 
+                      key={i} 
+                      onClick={() => setSelectedImage(imgSrc)}
+                      className={`aspect-square rounded-[12px] overflow-hidden border relative cursor-pointer transition-all duration-300 ${
+                        selectedImage === imgSrc 
+                          ? 'border-[#ceab7a] shadow-[0_0_15px_rgba(206,171,122,0.4)]' 
+                          : 'border-white/5 hover:border-[#ceab7a]/50'
+                      }`}
+                    >
                       <img 
-                        src={selectedService.img} 
-                        alt="thumbnail" 
-                        className="w-full h-full object-cover scale-150"
-                        style={{ objectPosition: `${(i+1)*20}% ${(i+1)*20}%` }}
+                        src={imgSrc} 
+                        alt={`thumbnail-${i+1}`} 
+                        className={`w-full h-full ${selectedService.id === "05" ? 'object-contain' : 'object-cover'}`}
                       />
-                      <div className="absolute inset-0 bg-black/40 hover:bg-transparent transition-colors duration-300" />
+                      <div className={`absolute inset-0 transition-colors duration-300 ${
+                        selectedImage === imgSrc ? 'bg-transparent' : 'bg-black/40 hover:bg-transparent'
+                      }`} />
                     </div>
                   ))}
                 </div>
@@ -382,7 +423,7 @@ export default function Services() {
                     }}
                     className="flex-1 py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black rounded-xl flex justify-center items-center gap-2 font-bold text-[14px] hover:shadow-[0_0_30px_rgba(206,171,122,0.4)] transition-all hover:scale-[1.02]"
                   >
-                    Start Your Project <ArrowRight size={18} />
+                    {selectedService.id === "04" ? "Create My Brand Content" : selectedService.id === "03" ? "Order Custom Printing" : "Start Your Project"} <ArrowRight size={18} />
                   </button>
                   <a 
                     href={waLink}

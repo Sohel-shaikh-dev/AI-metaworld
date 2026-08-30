@@ -1,10 +1,18 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { Zap, Target, Diamond, BriefcaseBusiness, Users, Clock, Smartphone, Quote, Sparkles } from 'lucide-react';
+import { Zap, Target, Diamond, BriefcaseBusiness, Users, Clock, Smartphone, Quote, Sparkles, Rocket, Star, Calendar } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
+import { useSettings } from '../contexts/SettingsContext';
+
+const IconMap: Record<string, any> = {
+  Rocket, Star, Calendar, Zap, BriefcaseBusiness, Users, Clock, Smartphone
+};
 
 const About = memo(function About() {
+  const { settings } = useSettings();
+  const { about_settings, brand_settings, stats_settings } = settings;
+  const activeStats = stats_settings.filter(s => s.active).sort((a, b) => a.order - b.order);
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
@@ -30,7 +38,7 @@ const About = memo(function About() {
           <div className="relative">
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-[#ceab7a] rounded-full blur-[20px] opacity-20"></div>
              <span className="text-[12px] md:text-[14px] font-medium text-[#ceab7a] tracking-[0.3em] uppercase relative z-10 min-w-[200px] text-center">
-               <CinematicTypewriter words={["ABOUT AI METAWORLD"]} typingSpeed={100} deletingSpeed={50} delayPause={6000} cursorClassName="bg-[#ceab7a]" />
+               <CinematicTypewriter words={[about_settings.eyebrow]} typingSpeed={100} deletingSpeed={50} delayPause={6000} cursorClassName="bg-[#ceab7a]" />
              </span>
           </div>
           <div className="h-[1px] flex-1 max-w-[100px] bg-gradient-to-r from-[#ceab7a] to-transparent opacity-50"></div>
@@ -49,22 +57,18 @@ const About = memo(function About() {
           >
             {/* Main Title */}
             <motion.h2 variants={itemVariants} className="font-sans text-[38px] sm:text-[46px] md:text-[52px] leading-[1.1] md:leading-[1.05] mb-8 font-bold tracking-tight">
-              <span className="block text-white mb-1">We Don't Just</span>
-              <span className="block text-white mb-2">Build Websites.</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] pb-1">
-                We Build Digital
-              </span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a]">
-                Presence.
+              <span className="block text-white mb-2 whitespace-pre-line">{about_settings.headingStatic.replace(/\\n/g, '\n')}</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] pb-1 whitespace-pre-line">
+                {about_settings.headingHighlight.replace(/\\n/g, '\n')}
               </span>
             </motion.h2>
 
             {/* Description Paragraphs */}
             <motion.p variants={itemVariants} className="text-gray-300 text-[15px] md:text-[16px] leading-[1.7] mb-6 max-w-[480px]">
-              AI Metaworld is a modern creative studio helping businesses grow through premium websites, AI-powered content, branding, and smart digital experiences.
+              {about_settings.description1}
             </motion.p>
             <motion.p variants={itemVariants} className="text-gray-300 text-[15px] md:text-[16px] leading-[1.7] mb-8 max-w-[480px]">
-              We combine creativity, technology, and strategy to build solutions that not only look premium but also deliver real results.
+              {about_settings.description2}
             </motion.p>
             
             <motion.div variants={itemVariants} className="w-16 h-[2px] bg-[#ceab7a] opacity-80 mt-2"></motion.div>
@@ -84,8 +88,8 @@ const About = memo(function About() {
             {/* Logo Image */}
             <div className="w-[220px] sm:w-[260px] md:w-[300px] aspect-square relative z-10 flex justify-center items-center">
               <img 
-                src="/Assets/logo.webp" 
-                alt="AI Metaworld Logo" 
+                src={brand_settings.logoUrl || '/Assets/logo.webp'} 
+                alt={brand_settings.brandName || "Logo"} 
                 className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(206,171,122,0.2)]" 
                 loading="lazy"
                 width={300}
@@ -133,23 +137,21 @@ const About = memo(function About() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="w-full flex items-center p-6 md:p-8 rounded-[16px] border border-[#ceab7a]/20 bg-[#0a0a0a] mb-6"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-y-8 md:gap-y-0">
-            {[
-              { icon: BriefcaseBusiness, num: "15+", text: "Projects\nCompleted" },
-              { icon: Users, num: "8+", text: "Brands\nEmpowered" },
-              { icon: Clock, num: "2+", text: "Years of\nExperience" },
-              { icon: Smartphone, num: "24h", text: "Avg. Response\nTime" }
-            ].map((stat, idx) => (
-              <div key={idx} className="flex items-center gap-4 md:gap-5 justify-start md:justify-center px-4 md:border-r md:border-[#ceab7a]/20 md:last:border-0 border-r border-[#ceab7a]/20 [&:nth-child(2n)]:border-r-0 md:[&:nth-child(2n)]:border-r">
+          <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-y-8 md:gap-y-0"
+               style={{ gridTemplateColumns: `repeat(auto-fit, minmax(140px, 1fr))` }}>
+            {activeStats.map((stat) => {
+              const SIcon = IconMap[stat.iconName] || BriefcaseBusiness;
+              return (
+              <div key={stat.id} className="flex items-center gap-4 md:gap-5 justify-start md:justify-center px-4 md:border-r md:border-[#ceab7a]/20 md:last:border-0 border-r border-[#ceab7a]/20 [&:nth-child(2n)]:border-r-0 md:[&:nth-child(2n)]:border-r">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#ceab7a]/40 flex items-center justify-center shrink-0">
-                  <stat.icon size={20} className="text-[#ceab7a]" strokeWidth={1.5} />
+                  <SIcon size={20} className="text-[#ceab7a]" strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[24px] sm:text-[28px] font-medium text-[#e8d3b5] leading-none mb-1">{stat.num}</span>
-                  <span className="text-[12px] sm:text-[13px] text-gray-400 leading-[1.2] whitespace-pre-line">{stat.text}</span>
+                  <span className="text-[24px] sm:text-[28px] font-medium text-[#e8d3b5] leading-none mb-1">{stat.value}</span>
+                  <span className="text-[12px] sm:text-[13px] text-gray-400 leading-[1.2] whitespace-pre-line">{stat.label}</span>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </motion.div>
 
@@ -165,7 +167,7 @@ const About = memo(function About() {
           <div className="w-full md:w-[55%] flex gap-4 md:gap-6 items-start md:border-r md:border-[#ceab7a]/20 md:pr-10">
             <Quote size={40} className="text-[#ceab7a] fill-[#ceab7a] shrink-0 opacity-80" />
             <p className="text-gray-300 text-[15px] sm:text-[16px] leading-[1.7] pt-1">
-              Our mission is simple – help businesses build a strong digital identity and achieve long-term growth with smart, scalable and creative solutions.
+              {about_settings.quoteText}
             </p>
           </div>
           
@@ -174,9 +176,9 @@ const About = memo(function About() {
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#ceab7a]/40 bg-[#ceab7a]/5 flex items-center justify-center shrink-0">
               <Sparkles size={24} className="text-[#ceab7a]" strokeWidth={1.5} />
             </div>
-            <p className="text-gray-300 text-[15px] sm:text-[16px] leading-[1.6]">
-              We don't follow trends,<br className="hidden md:block"/>we create impact.<br/>
-              <span className="text-[#ceab7a] font-medium">That's AI Metaworld.</span>
+            <p className="text-gray-300 text-[15px] sm:text-[16px] leading-[1.6] whitespace-pre-line">
+              {about_settings.starTextPrefix.replace(/\\n/g, '\n')}
+              <span className="text-[#ceab7a] font-medium">{about_settings.starTextHighlight}</span>
             </p>
           </div>
         </motion.div>

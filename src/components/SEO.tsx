@@ -1,4 +1,5 @@
 import { Helmet } from 'react-helmet-async';
+import { useSettings } from '../contexts/SettingsContext';
 
 interface SEOProps {
   title?: string;
@@ -9,14 +10,17 @@ interface SEOProps {
   image?: string;
 }
 
-export default function SEO({
-  title = "AI Metaworld | Premium AI & Digital Agency",
-  description = "We design cinematic digital experiences that combine strategy, AI, and creativity to help brands grow faster. Specializing in Web Design, Branding, AI Fashion, and Power BI.",
-  keywords = "AI Agency, Web Development, Premium Design, UI/UX, AI Fashion, Power BI Dashboards, Branding, Print on Demand",
-  type = "website",
-  url = "https://aimetaworld.com/",
-  image = "https://aimetaworld.com/favicon.webp"
-}: SEOProps) {
+export default function SEO(props: SEOProps) {
+  const { settings } = useSettings();
+  const { brand_settings } = settings;
+
+  const title = props.title || `${brand_settings.brandName} | ${brand_settings.tagline}`;
+  const description = props.description || "We design cinematic digital experiences that combine strategy, AI, and creativity to help brands grow faster. Specializing in Web Design, Branding, AI Fashion, and Power BI.";
+  const keywords = props.keywords || "AI Agency, Web Development, Premium Design, UI/UX, AI Fashion, Power BI Dashboards, Branding, Print on Demand";
+  const type = props.type || "website";
+  const url = props.url || "https://aimetaworld.com/";
+  const image = props.image || brand_settings.logoUrl || "https://aimetaworld.com/favicon.webp";
+
   return (
     <Helmet>
       {/* Standard metadata */}

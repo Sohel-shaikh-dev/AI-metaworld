@@ -4,9 +4,14 @@ import {
   Menu, X, ChevronDown, Rocket, 
   Home, User, LayoutGrid, Briefcase, Settings, Mail, Zap
 } from 'lucide-react';
+import { getSocialIcon } from './SocialIcons';
 import { cn } from '../utils';
+import { useSettings } from '../contexts/SettingsContext';
 
 export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
+  const { settings } = useSettings();
+  const { brand_settings, contact_settings, social_settings } = settings;
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -68,13 +73,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
     { name: 'Contact', href: '#contact', active: activeSection === 'contact', icon: Mail },
   ];
 
-  const socialLinks = [
-    { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>, href: "https://instagram.com/ai_metaworld" },
-    { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>, href: "https://www.linkedin.com/in/sohel-shaikhh/" },
-    { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.02c3.1-.34 6.33-1.55 6.33-6.99 0-1.5-.5-2.77-1.33-3.7.13-.31.5-1.75-.13-3.6 0 0-1-.31-3.3 1.2a11.5 11.5 0 0 0-6 0C7.2 1.69 6.2 2 6.2 2c-.63 1.85-.26 3.29-.13 3.6-1.83 2.1-1.33 3.7-1.33 3.7-5.44.44-6.33 1.65-6.33 6.99 0 1.5.5 2.77 1.33 3.7-.63 1.85.1 3.02 1 3.02v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>, href: "https://github.com/Sohel-shaikh-dev" },
-    { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>, href: "https://www.facebook.com/share/1asBpmQEbw/" },
-    { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33 2.78 2.78 0 0 0 1.94 2c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>, href: "https://www.youtube.com/@Aimetaworld" },
-  ];
+  const activeSocials = social_settings.filter(s => s.active).sort((a, b) => a.order - b.order);
 
   return (
     <>
@@ -103,10 +102,10 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
             <motion.span 
               className="font-medium text-[15px] md:text-[16px] tracking-wide text-white uppercase leading-none mb-1.5"
             >
-              AI Metaworld
+              {brand_settings.brandName}
             </motion.span>
             <span className="text-[#ceab7a] text-[7.5px] md:text-[8px] tracking-[0.18em] uppercase font-bold leading-none opacity-90">
-              AI Powered Creative Agency
+              {brand_settings.tagline}
             </span>
           </div>
         </motion.a>
@@ -189,10 +188,10 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
                 </div>
                 <div className="flex flex-col justify-center">
                   <span className="font-medium text-[16px] tracking-wide text-white uppercase leading-none mb-1.5">
-                    AI Metaworld
+                    {brand_settings.brandName}
                   </span>
                   <span className="text-[#ceab7a] text-[8px] tracking-[0.18em] uppercase font-bold leading-none opacity-90">
-                    Creative Agency
+                    {brand_settings.tagline}
                   </span>
                 </div>
               </div>
@@ -259,18 +258,18 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
                 <span className="text-[#ceab7a] text-[13px] font-semibold tracking-widest uppercase">Stay Connected</span>
                 
                 <div className="flex items-center gap-4">
-                  {socialLinks.map((social, i) => {
-                    const SIcon = social.icon;
+                  {activeSocials.map((social) => {
+                    const SIcon = getSocialIcon(social.iconName);
                     return (
                       <a 
-                        key={i} 
-                        href={social.href} 
+                        key={social.id} 
+                        href={social.url} 
                         target="_blank" 
                         rel="noreferrer"
-                        aria-label={`Visit our ${social.href.includes('instagram') ? 'Instagram' : social.href.includes('linkedin') ? 'LinkedIn' : social.href.includes('github') ? 'GitHub' : social.href.includes('facebook') ? 'Facebook' : 'YouTube'}`}
+                        aria-label={social.platform}
                         className="flex items-center justify-center w-12 h-12 rounded-xl border border-white/10 text-gray-400 hover:border-[#ceab7a]/50 hover:text-[#ceab7a] hover:bg-[#ceab7a]/5 transition-all hover:-translate-y-1"
                       >
-                        {SIcon}
+                        <SIcon size={18} strokeWidth={2} />
                       </a>
                     );
                   })}
@@ -288,7 +287,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
 
                 <div className="flex items-center gap-2">
                   <span className="text-gray-400 text-[13px] font-medium tracking-wide">
-                    Usually replies <span className="text-[#ceab7a]">within 1 hour</span>
+                    {contact_settings.responseTime.includes('usually') ? contact_settings.responseTime : `Usually replies ${contact_settings.responseTime}`}
                   </span>
                   <Zap size={14} className="text-[#ceab7a] fill-[#ceab7a]/20" strokeWidth={1.5} />
                 </div>
