@@ -37,9 +37,22 @@ export const navigateToSection = (e?: React.MouseEvent<any>, href?: string) => {
   }
 };
 
+export const pushNestedState = (parentSection: string, nestedType: string, nestedId: string | number, hashUrl?: string) => {
+  const currentState = window.history.state;
+  if (currentState && currentState.type === nestedType && String(currentState.nestedId) === String(nestedId)) {
+    return; // Already in this state
+  }
+  
+  window.history.pushState(
+    { __aiMetaWorld: true, type: nestedType, parentSection, nestedId: String(nestedId) },
+    '',
+    hashUrl || `#${parentSection}`
+  );
+};
+
 export const useNavigationManager = () => {
   useEffect(() => {
-    // 1. Initial Load - set baseline state safely
+    // Initial Load - set baseline state safely
     if (!window.history.state || !window.history.state.__aiMetaWorld) {
       let initialId = window.location.hash.replace('#', '');
       if (initialId === 'why-us') initialId = 'whyus';
@@ -55,15 +68,15 @@ export const useNavigationManager = () => {
       }
     }
 
-    // 2. Popstate Listener - handles the BACK and FORWARD buttons natively
     const handlePopState = (e: PopStateEvent) => {
       const state = e.state;
       
       if (state && state.__aiMetaWorld) {
+        // Dispatch unified event for ALL nested states to sync
+        window.dispatchEvent(new CustomEvent('sync-navigation-state', { detail: state }));
+        
         if (state.type === 'section') {
-          // If we popped back to a section, ensure any open project modal closes
-          window.dispatchEvent(new CustomEvent('close-project-modal'));
-          
+          // If we popped back to a parent section, scroll to it
           const el = document.getElementById(state.sectionId);
           if (el) {
             const top = el.getBoundingClientRect().top + window.scrollY;
@@ -74,8 +87,8 @@ export const useNavigationManager = () => {
         }
       } else {
         // Fallback for native external previous states or blank hashes
+        window.dispatchEvent(new CustomEvent('sync-navigation-state', { detail: { type: 'fallback' } }));
         if (!window.location.hash || window.location.hash === '') {
-           window.dispatchEvent(new CustomEvent('close-project-modal'));
            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }

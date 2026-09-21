@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { navigateToSection } from '../hooks/useNavigation';
+import { navigateToSection, pushNestedState } from '../hooks/useNavigation';
 import { 
   MonitorSmartphone, PenTool, BarChart3, Shirt, ArrowRight, Star, Zap, Sparkles,
   X, CheckCircle2, MessageCircle, Cpu, Search, Code, Rocket, Palette, Package, Lightbulb, Check, Database, Table, PieChart, TrendingUp, Download, Image as ImageIcon, ZapIcon
@@ -165,6 +165,34 @@ export default function Services() {
   const [selectedService, setSelectedService] = useState<typeof services[0] | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const openService = (service: typeof services[0]) => {
+    pushNestedState('services', 'nested_service', service.id, '#services');
+    setSelectedService(service);
+  };
+
+  const closeService = () => {
+    if (window.history.state?.type === 'nested_service') {
+      window.history.back();
+    } else {
+      setSelectedService(null);
+    }
+  };
+
+  useEffect(() => {
+    const handleSyncEvent = (e: any) => {
+      const state = e.detail;
+      if (state.type === 'nested_service') {
+        const service = services.find(s => s.id === state.nestedId) || null;
+        setSelectedService(service);
+      } else {
+        setSelectedService(null);
+      }
+    };
+    
+    window.addEventListener('sync-navigation-state', handleSyncEvent);
+    return () => window.removeEventListener('sync-navigation-state', handleSyncEvent);
+  }, []);
+
   // Prevent background scrolling when modal is open and reset image state
   useEffect(() => {
     if (selectedService) {
@@ -238,7 +266,7 @@ export default function Services() {
             <motion.div 
               variants={itemVariants}
               key={idx}
-              onClick={() => setSelectedService(service)}
+              onClick={() => openService(service)}
               className="flex flex-col rounded-[20px] border border-[#ceab7a]/30 bg-[#0a0a0a] overflow-hidden hover:border-[#ceab7a]/60 hover:shadow-[0_0_30px_rgba(206,171,122,0.1)] transition-all duration-500 relative group w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] cursor-pointer"
             >
               <div className="p-8 pb-0 flex flex-col flex-1 z-10 relative pointer-events-none">
@@ -312,7 +340,7 @@ export default function Services() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md overflow-y-auto flex items-start justify-center p-4 md:p-8 pt-[5vh] sm:pt-[10vh]"
-              onClick={() => setSelectedService(null)}
+              onClick={() => closeService()}
             >
               <div
                 onClick={(e) => e.stopPropagation()}
@@ -321,7 +349,7 @@ export default function Services() {
               {/* Close Button */}
               <button 
                 aria-label="Close Service Details"
-                onClick={() => setSelectedService(null)}
+                onClick={() => closeService()}
                 className="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:border-[#ceab7a]/50 transition-all duration-300"
               >
                 <X size={20} />
@@ -420,8 +448,8 @@ export default function Services() {
                 <div className="flex flex-col sm:flex-row gap-4 mt-auto">
                     <button 
                       onClick={() => {
-                        setSelectedService(null);
-                        navigateToSection(undefined, '#contact');
+                        closeService();
+                        setTimeout(() => navigateToSection(undefined, '#contact'), 50);
                       }}
                       className="flex-1 py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black rounded-xl flex justify-center items-center gap-2 font-bold text-[14px] hover:shadow-[0_0_30px_rgba(206,171,122,0.4)] transition-all hover:scale-[1.02]"
                     >

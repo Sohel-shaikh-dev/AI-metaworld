@@ -2,7 +2,7 @@ import { useState, useEffect, memo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { navigateToSection } from '../hooks/useNavigation';
+import { navigateToSection, pushNestedState } from '../hooks/useNavigation';
 import { X, ExternalLink, ArrowRight, Monitor, BarChart2, Rocket, Image as ImageIcon, ShoppingBag, Briefcase, Users, Clock, CheckCircle, ChevronLeft } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
 import { supabase } from '../lib/supabase';
@@ -209,37 +209,77 @@ const Portfolio = memo(function Portfolio() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const openProject = useCallback((project: Project) => {
-    if (window.location.hash !== '#project-' + project.id) {
-      window.history.pushState({ __aiMetaWorld: true, type: 'project', projectId: project.id }, '', '#project-' + project.id);
+  const openCategory = useCallback((categoryId: string) => {
+    pushNestedState('work', 'nested_category', categoryId, `#work`);
+    setSelectedCategory(categoryId);
+  }, []);
+
+  const closeCategory = useCallback(() => {
+    if (window.history.state?.type === 'nested_category') {
+      window.history.back();
+    } else {
+      setSelectedCategory(null);
     }
+  }, []);
+
+  const openProject = useCallback((project: Project) => {
+    pushNestedState('work', 'nested_project', project.id, '#project-' + project.id);
     setSelectedProject(project);
   }, []);
 
   const closeProject = useCallback(() => {
-    if (window.history.state?.type === 'project') {
+    if (window.history.state?.type === 'nested_project') {
       window.history.back();
     } else {
-      window.history.replaceState({ __aiMetaWorld: true, type: 'section', sectionId: 'work' }, '', '#work');
       setSelectedProject(null);
     }
   }, []);
 
   useEffect(() => {
-    const handleCloseEvent = () => setSelectedProject(null);
+    const handleSyncEvent = (e: any) => {
+      const state = e.detail;
+      
+      if (state.type === 'nested_category') {
+        setSelectedCategory(state.nestedId);
+        setSelectedProject(null);
+      } else if (state.type === 'nested_project') {
+        const project = normalizedProjects.find(p => p.id === state.nestedId) || null;
+        if (project) {
+          // If the project belongs to a category and none is selected, auto-select it
+          setSelectedCategory(prev => prev || project.type || null);
+        }
+        setSelectedProject(project);
+      } else {
+        // Fallback or section state (including 'work')
+        setSelectedCategory(null);
+        setSelectedProject(null);
+      }
+    };
+    
+    window.addEventListener('sync-navigation-state', handleSyncEvent);
+    
+    // Fallback for old hardcoded event just in case
+    const handleCloseEvent = () => {
+      setSelectedProject(null);
+      setSelectedCategory(null);
+    };
     window.addEventListener('close-project-modal', handleCloseEvent);
     
-    // Also handle direct load with #project- ID
+    // Direct load handling
     if (window.location.hash.startsWith('#project-') && normalizedProjects.length > 0) {
       const projectId = window.location.hash.replace('#project-', '');
       const project = normalizedProjects.find(p => p.id === projectId);
       if (project) {
+        setSelectedCategory(project.type || null);
         setSelectedProject(project);
-        window.history.replaceState({ __aiMetaWorld: true, type: 'project', projectId }, '', window.location.hash);
+        window.history.replaceState({ __aiMetaWorld: true, type: 'nested_project', parentSection: 'work', nestedId: projectId }, '', window.location.hash);
       }
     }
     
-    return () => window.removeEventListener('close-project-modal', handleCloseEvent);
+    return () => {
+      window.removeEventListener('sync-navigation-state', handleSyncEvent);
+      window.removeEventListener('close-project-modal', handleCloseEvent);
+    };
   }, [normalizedProjects]);
 
   useEffect(() => {
@@ -1050,7 +1090,7 @@ const Portfolio = memo(function Portfolio() {
             {CATEGORIES.map((cat, idx) => (
               <motion.div 
                 key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
+                onClick={() => openCategory(cat.id)}
                 variants={itemVariants}
                 className={`group cursor-pointer rounded-[24px] overflow-hidden border border-[#ceab7a]/10 bg-[#0a0a0a] shadow-[0_0_40px_rgba(0,0,0,0.5)] flex flex-col h-full hover:border-[#ceab7a]/30 transition-all duration-500 ${idx === 3 ? 'lg:col-start-1 lg:col-span-1 lg:ml-auto' : ''} ${idx === 4 ? 'lg:col-start-2 lg:col-span-1 lg:mr-auto' : ''}`}
               >
@@ -1145,7 +1185,7 @@ const Portfolio = memo(function Portfolio() {
               <div className="min-h-screen px-4 py-12 sm:p-6 md:p-12 flex flex-col items-center">
                 <div className="w-full max-w-[1200px]">
                   <button 
-                    onClick={() => setSelectedCategory(null)}
+                    onClick={() => closeCategory()}
                     className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors w-fit group mb-10"
                   >
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-[#ceab7a] group-hover:text-black transition-colors">
