@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Menu, X, ChevronDown, Rocket, 
+  Menu, X, Rocket, 
   Home, User, LayoutGrid, Briefcase, Settings, Mail, Zap
 } from 'lucide-react';
 import { getSocialIcon } from './SocialIcons';
@@ -73,7 +73,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
   const navLinks = [
     { name: 'Home', href: '#home', active: activeSection === 'home', icon: Home },
     { name: 'About Us', href: '#about', active: activeSection === 'about', icon: User },
-    { name: 'Services', href: '#services', active: activeSection === 'services', icon: LayoutGrid, hasDropdown: true },
+    { name: 'Services', href: '#services', active: activeSection === 'services', icon: LayoutGrid },
     { name: 'Our Work', href: '#work', active: activeSection === 'work', icon: Briefcase },
     { name: 'Process', href: '#process', active: activeSection === 'process', icon: Settings },
     { name: 'Contact', href: '#contact', active: activeSection === 'contact', icon: Mail },
@@ -134,7 +134,6 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
               )}
             >
               <span className="group-hover:text-white transition-colors">{link.name}</span>
-              {link.hasDropdown && <ChevronDown size={14} className={link.active ? "text-[#ceab7a]" : "text-gray-500 group-hover:text-white transition-colors"} />}
               
               {/* Active Gold Underline Indicator */}
               {link.active && (
@@ -247,7 +246,7 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
                         {link.name}
                       </span>
                     </div>
-                    {link.hasDropdown && <span className="text-gray-500 text-2xl font-light pr-2">+</span>}
+                    
                   </motion.a>
                 );
               })}
