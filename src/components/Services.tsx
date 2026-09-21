@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import { navigateToSection } from '../hooks/useNavigation';
 import { 
   MonitorSmartphone, PenTool, BarChart3, Shirt, ArrowRight, Star, Zap, Sparkles,
   X, CheckCircle2, MessageCircle, Cpu, Search, Code, Rocket, Palette, Package, Lightbulb, Check, Database, Table, PieChart, TrendingUp, Download, Image as ImageIcon, ZapIcon
@@ -293,6 +294,7 @@ export default function Services() {
           
           <a 
             href="#contact" 
+            onClick={(e) => navigateToSection(e, '#contact')}
             className="flex items-center gap-3 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black px-6 py-3 rounded-full font-semibold text-[14px] md:text-[15px] hover:shadow-[0_0_20px_rgba(206,171,122,0.4)] transition-all duration-300 hover:scale-105"
           >
             Start a Project <ArrowRight size={18} strokeWidth={2.5} />
@@ -416,13 +418,13 @@ export default function Services() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                  <button 
-                    onClick={() => {
-                      setSelectedService(null);
-                      setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 300);
-                    }}
-                    className="flex-1 py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black rounded-xl flex justify-center items-center gap-2 font-bold text-[14px] hover:shadow-[0_0_30px_rgba(206,171,122,0.4)] transition-all hover:scale-[1.02]"
-                  >
+                    <button 
+                      onClick={() => {
+                        setSelectedService(null);
+                        navigateToSection(undefined, '#contact');
+                      }}
+                      className="flex-1 py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black rounded-xl flex justify-center items-center gap-2 font-bold text-[14px] hover:shadow-[0_0_30px_rgba(206,171,122,0.4)] transition-all hover:scale-[1.02]"
+                    >
                     {selectedService.id === "04" ? "Create My Brand Content" : selectedService.id === "03" ? "Order Custom Printing" : "Start Your Project"} <ArrowRight size={18} />
                   </button>
                   <a 

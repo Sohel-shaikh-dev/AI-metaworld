@@ -32,6 +32,7 @@ import { AnimatedSparkleInput, AnimatedSelect, AnimatedTextarea } from './Animat
 import CinematicTypewriter from './CinematicTypewriter';
 
 import { useSettings } from '../contexts/SettingsContext';
+import { navigateToSection } from '../hooks/useNavigation';
 import { supabase } from '../lib/supabase';
 
 export default function Contact() {
@@ -380,7 +381,10 @@ export default function Contact() {
                       <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                     </a>
 
-                    <button onClick={() => window.location.href='/'} className="flex-1 px-6 py-4 bg-transparent border border-white/10 hover:border-[#ceab7a]/50 text-white rounded-xl flex items-center justify-between group transition-all text-left">
+                    <button onClick={(e) => {
+                      setIsSuccess(false);
+                      navigateToSection(e, '#home');
+                    }} className="flex-1 px-6 py-4 bg-transparent border border-white/10 hover:border-[#ceab7a]/50 text-white rounded-xl flex items-center justify-between group transition-all text-left">
                       <div className="flex items-center gap-3">
                         <Home size={24} className="text-gray-400 group-hover:text-[#ceab7a] transition-colors" />
                         <div className="flex flex-col items-start">

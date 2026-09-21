@@ -7,6 +7,7 @@ import {
 import { getSocialIcon } from './SocialIcons';
 import { cn } from '../utils';
 import { useSettings } from '../contexts/SettingsContext';
+import { navigateToSection } from '../hooks/useNavigation';
 
 export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
   const { settings } = useSettings();
@@ -18,26 +19,21 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
   const [activeSection, setActiveSection] = useState('home');
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    
     // Always close mobile menu instantly
     setMobileMenuOpen(false);
     document.body.style.overflow = ''; // Guarantee scroll unlock
-
-    // Map hrefs to actual element IDs
-    let targetId = href.replace('#', '');
-    if (targetId === 'why-us') targetId = 'whyus';
     
-    const el = document.getElementById(targetId);
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY;
-      setTimeout(() => {
-        window.scrollTo({ top: top - 80, behavior: 'smooth' });
-      }, 50); // Slight delay to avoid browser scrolling cancellation
-    }
+    // Delegate to central navigation manager
+    navigateToSection(e, href);
   };
 
   useEffect(() => {
+    const handleCloseMenu = () => {
+      setMobileMenuOpen(false);
+      document.body.style.overflow = '';
+    };
+    window.addEventListener('close-mobile-menu', handleCloseMenu);
+    
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
       
@@ -56,7 +52,10 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
     };
     window.addEventListener('scroll', handleScroll);
     handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('close-mobile-menu', handleCloseMenu);
+    };
   }, []);
 
   // Prevent background scrolling when mobile menu is open

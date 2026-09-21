@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
+import { navigateToSection } from '../hooks/useNavigation';
 
 const cards = [
   {
@@ -202,6 +203,7 @@ export default function WhyChooseUs() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 relative z-10">
             <a 
               href="#contact"
+              onClick={(e) => navigateToSection(e, '#contact')}
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[#e8d3b5] to-[#ceab7a] text-black font-bold rounded-full text-[13px] tracking-[0.05em] hover:shadow-[0_0_30px_rgba(206,171,122,0.4)] transition-all duration-300 flex items-center justify-center gap-3"
             >
               Start Your Project

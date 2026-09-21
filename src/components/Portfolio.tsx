@@ -2,6 +2,7 @@ import { useState, useEffect, memo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import { navigateToSection } from '../hooks/useNavigation';
 import { X, ExternalLink, ArrowRight, Monitor, BarChart2, Rocket, Image as ImageIcon, ShoppingBag, Briefcase, Users, Clock, CheckCircle, ChevronLeft } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
 import { supabase } from '../lib/supabase';
@@ -210,40 +211,35 @@ const Portfolio = memo(function Portfolio() {
 
   const openProject = useCallback((project: Project) => {
     if (window.location.hash !== '#project-' + project.id) {
-      window.history.pushState({ projectModalOpen: true }, '', '#project-' + project.id);
+      window.history.pushState({ __aiMetaWorld: true, type: 'project', projectId: project.id }, '', '#project-' + project.id);
     }
     setSelectedProject(project);
   }, []);
 
   const closeProject = useCallback(() => {
-    if (window.history.state?.projectModalOpen) {
+    if (window.history.state?.type === 'project') {
       window.history.back();
     } else {
-      window.history.pushState({}, '', window.location.pathname + window.location.search);
+      window.history.replaceState({ __aiMetaWorld: true, type: 'section', sectionId: 'work' }, '', '#work');
       setSelectedProject(null);
     }
   }, []);
 
   useEffect(() => {
-    const handlePopState = () => {
-      if (window.location.hash.startsWith('#project-')) {
-        const projectId = window.location.hash.replace('#project-', '');
-        const project = normalizedProjects.find(p => p.id === projectId);
-        if (project) {
-          setSelectedProject(project);
-        } else {
-          setSelectedProject(null);
-        }
-      } else {
-        setSelectedProject(null);
+    const handleCloseEvent = () => setSelectedProject(null);
+    window.addEventListener('close-project-modal', handleCloseEvent);
+    
+    // Also handle direct load with #project- ID
+    if (window.location.hash.startsWith('#project-') && normalizedProjects.length > 0) {
+      const projectId = window.location.hash.replace('#project-', '');
+      const project = normalizedProjects.find(p => p.id === projectId);
+      if (project) {
+        setSelectedProject(project);
+        window.history.replaceState({ __aiMetaWorld: true, type: 'project', projectId }, '', window.location.hash);
       }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    if (normalizedProjects.length > 0 && window.location.hash.startsWith('#project-')) {
-      handlePopState();
     }
-    return () => window.removeEventListener('popstate', handlePopState);
+    
+    return () => window.removeEventListener('close-project-modal', handleCloseEvent);
   }, [normalizedProjects]);
 
   useEffect(() => {
@@ -1126,7 +1122,7 @@ const Portfolio = memo(function Portfolio() {
             <div className="absolute inset-0 bg-[#ceab7a]/5 mix-blend-overlay pointer-events-none transition-opacity duration-500 opacity-50 group-hover:opacity-100" />
             <h3 className="text-[28px] sm:text-[36px] font-serif text-white mb-2 relative z-10">Have a project in mind?</h3>
             <p className="text-gray-400 text-[15px] mb-8 relative z-10">Let's build something amazing together.</p>
-            <a href="#contact" className="px-8 py-4 bg-gradient-to-r from-[#e8d3b5] to-[#ceab7a] text-black font-bold rounded-full text-[14px] tracking-wide shadow-[0_0_30px_rgba(206,171,122,0.3)] hover:scale-105 hover:shadow-[0_0_40px_rgba(206,171,122,0.5)] transition-all duration-300 relative z-10 flex items-center gap-2">
+            <a href="#contact" onClick={(e) => navigateToSection(e, '#contact')} className="px-8 py-4 bg-gradient-to-r from-[#e8d3b5] to-[#ceab7a] text-black font-bold rounded-full text-[14px] tracking-wide shadow-[0_0_30px_rgba(206,171,122,0.3)] hover:scale-105 hover:shadow-[0_0_40px_rgba(206,171,122,0.5)] transition-all duration-300 relative z-10 flex items-center gap-2">
               Start Your Project <ArrowRight size={18} />
             </a>
           </motion.div>

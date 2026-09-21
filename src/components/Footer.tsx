@@ -9,6 +9,7 @@ import { getSocialIcon } from './SocialIcons';
 import { Link } from 'react-router-dom';
 
 import { useSettings } from '../contexts/SettingsContext';
+import { navigateToSection } from '../hooks/useNavigation';
 
 const StatIconMap: Record<string, any> = {
   Link: LinkIcon, Rocket, Star, Calendar, Zap, BriefcaseBusiness, Users, Clock, Smartphone
@@ -127,7 +128,7 @@ export default function Footer() {
                   const id = link === 'Home' ? 'hero' : link === 'About Us' ? 'about' : link === 'Our Work' ? 'work' : link.toLowerCase().replace(' ', '-');
                   return (
                     <li key={link}>
-                      <a href={`#${id}`} className="text-gray-400 text-[14px] hover:text-[#ceab7a] transition-colors flex items-center justify-between group py-1">
+                      <a href={`#${id}`} onClick={(e) => navigateToSection(e, `#${id}`)} className="text-gray-400 text-[14px] hover:text-[#ceab7a] transition-colors flex items-center justify-between group py-1">
                         <span>{link}</span>
                         <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                       </a>

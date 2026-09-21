@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Play, Zap, Monitor, PenTool, Video, BarChart3, Shirt, Rocket, Star, Calendar, Sparkles, BriefcaseBusiness, Users, Clock, Smartphone } from 'lucide-react';
 import CinematicTypewriter from './CinematicTypewriter';
 import { useSettings } from '../contexts/SettingsContext';
+import { navigateToSection } from '../hooks/useNavigation';
 
 const IconMap: Record<string, any> = {
   Rocket, Star, Calendar, Zap, BriefcaseBusiness, Users, Clock, Smartphone
@@ -12,14 +13,6 @@ const Hero = memo(function Hero() {
   const { settings } = useSettings();
   const { hero_settings, stats_settings } = settings;
   const activeStats = stats_settings.filter(s => s.active).sort((a, b) => a.order - b.order);
-  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
-    e.preventDefault();
-    const el = document.getElementById(targetId);
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo({ top: top - 80, behavior: 'smooth' });
-    }
-  };
 
   return (
     <section id="home" className="relative pt-24 pb-16 md:pt-40 md:pb-24 overflow-hidden flex flex-col bg-[#050505] min-h-screen">
@@ -102,23 +95,22 @@ const Hero = memo(function Hero() {
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="flex flex-wrap items-center gap-4 mb-6 w-full sm:w-auto"
           >
-            <motion.a 
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              href={hero_settings.primaryCtaUrl} 
-              onClick={(e) => handleScrollTo(e, hero_settings.primaryCtaUrl.replace('#', ''))}
-              className="group flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black text-[14px] sm:text-[15px] font-bold tracking-[0.02em] rounded-xl shadow-[0_0_20px_rgba(206,171,122,0.3)] transition-all flex-1 sm:flex-none whitespace-nowrap min-w-[160px]"
-            >
-              {hero_settings.primaryCtaText} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </motion.a>
-
-            <motion.a 
-              whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.03)' }}
-              whileTap={{ scale: 0.98 }}
-              href={hero_settings.secondaryCtaUrl} 
-              onClick={(e) => handleScrollTo(e, hero_settings.secondaryCtaUrl.replace('#', ''))}
-              className="group flex items-center justify-center gap-3 px-6 py-3.5 sm:px-8 sm:py-4 bg-transparent border border-[#ceab7a]/50 text-white text-[14px] sm:text-[15px] font-medium tracking-[0.02em] rounded-xl transition-all flex-1 sm:flex-none whitespace-nowrap min-w-[160px] hover:border-[#ceab7a]"
-            >
+              <motion.a 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                href={hero_settings.primaryCtaUrl} 
+                onClick={(e) => navigateToSection(e, hero_settings.primaryCtaUrl)}
+                className="group flex items-center justify-center gap-2 sm:gap-3 px-5 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a] text-black text-[13px] sm:text-[15px] font-bold tracking-[0.02em] rounded-xl shadow-[0_0_20px_rgba(206,171,122,0.3)] transition-all flex-1 sm:flex-none whitespace-nowrap"
+              >
+                {hero_settings.primaryCtaText} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </motion.a>
+              <motion.a 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                href={hero_settings.secondaryCtaUrl} 
+                onClick={(e) => navigateToSection(e, hero_settings.secondaryCtaUrl)}
+                className="group flex items-center justify-center gap-2 sm:gap-3 px-5 py-3 sm:px-8 sm:py-4 bg-transparent border border-[#ceab7a]/50 text-white text-[13px] sm:text-[15px] font-medium tracking-[0.02em] rounded-xl transition-all flex-1 sm:flex-none whitespace-nowrap hover:border-[#ceab7a]"
+              >
               <Play size={18} className="text-[#ceab7a]" fill="currentColor" fillOpacity={0.2} /> {hero_settings.secondaryCtaText}
             </motion.a>
           </motion.div>

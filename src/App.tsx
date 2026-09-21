@@ -6,6 +6,7 @@ import About from './components/About';
 import Preloader from './components/Preloader';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import SEO from './components/SEO';
+import { useNavigationManager } from './hooks/useNavigation';
 
 // Standard imports for deterministic initial rendering (Fixes CLS and jumping layout)
 import Services from './components/Services';
@@ -16,6 +17,7 @@ import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 function App() {
+  useNavigationManager();
   const [loading, setLoading] = useState(true);
 
   // Lock scroll during preloader
