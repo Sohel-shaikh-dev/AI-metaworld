@@ -60,7 +60,14 @@ export const useNavigationManager = () => {
       
       // Do not replace if it's a project deep link, Portfolio will handle that
       if (!initialId.startsWith('project-')) {
+        // Create an invisible 'entry' state to intercept back navigation from exiting the app when scrolled
         window.history.replaceState(
+          { __aiMetaWorld: true, type: 'entry' }, 
+          '', 
+          window.location.hash || '#' + initialId
+        );
+        // Then push the actual active section state
+        window.history.pushState(
           { __aiMetaWorld: true, type: 'section', sectionId: initialId }, 
           '', 
           window.location.hash || '#' + initialId
@@ -72,6 +79,31 @@ export const useNavigationManager = () => {
       const state = e.state;
       
       if (state && state.__aiMetaWorld) {
+        if (state.type === 'entry') {
+          if (window.scrollY > 50) {
+            // User pressed Back to leave the site, but they were scrolled down.
+            // Intercept: scroll to top instead.
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Re-push the section state so they can press Back again to actually leave if they want
+            let currentId = 'home';
+            
+            const newState = { __aiMetaWorld: true, type: 'section', sectionId: currentId };
+            window.history.pushState(
+              newState,
+              '',
+              '#' + currentId
+            );
+            
+            // Inform the rest of the app (Navbar, etc.) that we are back at Home
+            window.dispatchEvent(new CustomEvent('sync-navigation-state', { detail: newState }));
+          } else {
+            // User is already at the top. Let them leave the site immediately.
+            window.history.back();
+          }
+          return;
+        }
+
         // Dispatch unified event for ALL nested states to sync
         window.dispatchEvent(new CustomEvent('sync-navigation-state', { detail: state }));
         
