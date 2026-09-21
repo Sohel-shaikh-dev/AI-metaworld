@@ -19,11 +19,18 @@ export default function Navbar({ isLoading = false }: { isLoading?: boolean }) {
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
-    const targetId = href.replace('#', '');
+    
+    // Always close mobile menu instantly
+    setMobileMenuOpen(false);
+    document.body.style.overflow = ''; // Guarantee scroll unlock
+
+    // Map hrefs to actual element IDs
+    let targetId = href.replace('#', '');
+    if (targetId === 'why-us') targetId = 'whyus';
+    
     const el = document.getElementById(targetId);
     if (el) {
       const top = el.getBoundingClientRect().top + window.scrollY;
-      setMobileMenuOpen(false); // Close menu instantly
       setTimeout(() => {
         window.scrollTo({ top: top - 80, behavior: 'smooth' });
       }, 50); // Slight delay to avoid browser scrolling cancellation
