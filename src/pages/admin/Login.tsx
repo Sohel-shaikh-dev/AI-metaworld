@@ -48,7 +48,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white font-sans">
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 sm:p-6 text-white font-sans">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#ceab7a]/5 via-[#050505] to-[#050505] pointer-events-none" />
       
       <motion.div 
@@ -57,27 +57,27 @@ export default function Login() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="w-full max-w-md relative z-10"
       >
-        <div className="text-center mb-10">
-          <img src="/Assets/logo.webp" alt="AI Metaworld" className="w-12 h-12 object-contain mx-auto mb-6" />
-          <h1 className="text-3xl font-serif text-white tracking-tight mb-2">
+        <div className="text-center mb-8 sm:mb-10">
+          <img src="/Assets/logo.webp" alt="AI Metaworld" className="w-12 h-12 object-contain mx-auto mb-5 sm:mb-6" />
+          <h1 className="text-2xl sm:text-3xl font-serif text-white tracking-tight mb-2">
             {isResetMode ? 'Reset Password' : 'Agency Access'}
           </h1>
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 text-xs sm:text-sm">
             {isResetMode ? 'Enter your email to receive a reset link.' : 'Secure login to the AI Metaworld platform.'}
           </p>
         </div>
 
-        <div className="bg-[#101010] border border-white/5 p-8 rounded-2xl shadow-2xl relative overflow-hidden">
+        <div className="bg-[#101010] border border-white/5 p-6 sm:p-8 rounded-2xl shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#ceab7a]/30 to-transparent" />
           
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-5 sm:space-y-6">
             <div className="space-y-2">
               <label className="text-xs uppercase tracking-widest text-gray-400 font-medium ml-1">Email</label>
               <input 
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors"
+                className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors min-h-[46px]"
                 placeholder="aimetaworldd@gmail.com"
                 required
               />
@@ -100,14 +100,15 @@ export default function Login() {
                     type={showPassword ? "text" : "password"} 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors pr-10"
+                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#ceab7a]/50 transition-colors pr-11 min-h-[46px]"
                     placeholder="••••••••"
                     required={!isResetMode}
                   />
                   <button 
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg min-w-[36px] min-h-[36px] flex items-center justify-center"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>

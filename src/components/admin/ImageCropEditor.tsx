@@ -41,6 +41,29 @@ export default function ImageCropEditor({ session }: ImageCropEditorProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Lock body scroll when crop modal is open
+  useEffect(() => {
+    if (session) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [session]);
+
+  // Handle Escape key to cancel crop session
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && session && !isProcessing) {
+        session.onCancel();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [session, isProcessing]);
+
   // When aspect ratio changes, recalculate crop box
   useEffect(() => {
     if (imgRef.current) {
@@ -234,11 +257,11 @@ export default function ImageCropEditor({ session }: ImageCropEditorProps) {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/5">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 pt-4 border-t border-white/5">
               <button
                 onClick={handleOriginalUpload}
                 disabled={isProcessing}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold tracking-widest text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-50"
+                className="w-full sm:w-auto px-5 py-3 rounded-xl font-bold tracking-widest text-xs text-gray-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-50 min-h-[44px] flex items-center justify-center"
               >
                 ORIGINAL / NO CROP
               </button>
@@ -247,14 +270,14 @@ export default function ImageCropEditor({ session }: ImageCropEditorProps) {
                 <button
                   onClick={() => !isProcessing && session.onCancel()}
                   disabled={isProcessing}
-                  className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold tracking-widest text-xs bg-white/5 text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50"
+                  className="flex-1 sm:flex-none sm:w-auto px-5 py-3 rounded-xl font-bold tracking-widest text-xs bg-white/5 text-gray-300 hover:bg-white/10 transition-colors disabled:opacity-50 min-h-[44px] flex items-center justify-center"
                 >
                   CANCEL
                 </button>
                 <button
                   onClick={handleCropAndUpload}
                   disabled={isProcessing || !completedCrop?.width || !completedCrop?.height}
-                  className="w-full sm:w-auto px-8 py-3 rounded-xl font-bold tracking-widest text-xs bg-[#ceab7a] text-black hover:bg-white transition-all shadow-[0_0_20px_rgba(206,171,122,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2"
+                  className="flex-1 sm:flex-none sm:w-auto px-6 sm:px-8 py-3 rounded-xl font-bold tracking-widest text-xs bg-[#ceab7a] text-black hover:bg-white transition-all shadow-[0_0_20px_rgba(206,171,122,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 min-h-[44px]"
                 >
                   {isProcessing ? (
                     <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />

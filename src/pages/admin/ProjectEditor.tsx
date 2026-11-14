@@ -238,19 +238,24 @@ export default function ProjectEditor() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto space-y-8 pb-32">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-4xl mx-auto space-y-8 pb-36 sm:pb-32">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link to="/admin/projects" className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors text-white" onClick={(e) => {
-            if (hasUnsavedChanges && !window.confirm('You have unsaved changes. Leave anyway?')) {
-              e.preventDefault();
-            }
-          }}>
-            <ArrowLeft size={20} />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <Link 
+            to="/admin/projects" 
+            className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-white min-w-[44px] min-h-[44px] flex items-center justify-center shrink-0" 
+            aria-label="Back to projects list"
+            onClick={(e) => {
+              if (hasUnsavedChanges && !window.confirm('You have unsaved changes. Leave anyway?')) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <ArrowLeft size={18} />
           </Link>
           <div>
-            <h1 className="text-3xl font-serif text-white tracking-tight">{isEditing ? 'Edit Project' : 'New Project'}</h1>
-            {hasUnsavedChanges && <p className="text-xs text-[#ceab7a] flex items-center gap-1 mt-1"><AlertTriangle size={12}/> Unsaved changes</p>}
+            <h1 className="text-2xl sm:text-3xl font-serif text-white tracking-tight">{isEditing ? 'Edit Project' : 'New Project'}</h1>
+            {hasUnsavedChanges && <p className="text-xs text-[#ceab7a] flex items-center gap-1.5 mt-1 font-medium"><AlertTriangle size={12}/> Unsaved changes</p>}
           </div>
         </div>
       </div>
@@ -625,12 +630,16 @@ export default function ProjectEditor() {
         </div>
 
         {/* Fixed Save Bar */}
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 z-40 lg:left-64 flex justify-end items-center px-8">
-          {hasUnsavedChanges && <span className="text-sm text-gray-400 mr-6">You have unsaved changes</span>}
+        <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 bg-[#0a0a0a]/95 backdrop-blur-md border-t border-white/10 z-30 lg:left-64 flex flex-col sm:flex-row items-center justify-between sm:justify-end gap-2.5 sm:gap-4 px-4 sm:px-8 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          {hasUnsavedChanges && (
+            <span className="text-xs sm:text-sm text-[#ceab7a] flex items-center gap-1.5 font-medium">
+              <AlertTriangle size={14} /> Unsaved changes
+            </span>
+          )}
           <button 
             type="submit" 
             disabled={loading || !hasUnsavedChanges}
-            className={`px-8 py-4 rounded-xl uppercase tracking-widest font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 ${hasUnsavedChanges ? 'bg-[#ceab7a] text-black hover:bg-white shadow-[0_0_20px_rgba(206,171,122,0.3)]' : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}
+            className={`w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl uppercase tracking-widest font-bold text-xs sm:text-sm transition-all duration-300 flex items-center justify-center gap-2 min-h-[46px] ${hasUnsavedChanges ? 'bg-[#ceab7a] text-black hover:bg-white shadow-[0_0_20px_rgba(206,171,122,0.3)]' : 'bg-white/5 text-gray-500 cursor-not-allowed'}`}
           >
             {loading ? <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" /> : <><Save size={16} /> Save Project</>}
           </button>

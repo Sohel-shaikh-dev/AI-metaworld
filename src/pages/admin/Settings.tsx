@@ -39,6 +39,34 @@ export default function Settings({ section }: { section: string }) {
     markClean();
   }, [currentSettings, section, markClean]);
 
+  // Lock body scroll when any modal in Settings is open
+  useEffect(() => {
+    if (socialModal.isOpen || statsDeleteModal.isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [socialModal.isOpen, statsDeleteModal.isOpen]);
+
+  // Handle Escape key to close open modals
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isDeleting) {
+        if (socialModal.isOpen) {
+          setSocialModal(prev => ({ ...prev, isOpen: false }));
+        }
+        if (statsDeleteModal.isOpen) {
+          setStatsDeleteModal({ isOpen: false, index: null });
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [socialModal.isOpen, statsDeleteModal.isOpen, isDeleting]);
+
   const uploadFile = async (file: File): Promise<string | null> => {
     try {
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -302,17 +330,17 @@ export default function Settings({ section }: { section: string }) {
           )}
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 shrink-0">
           {hasUnsavedChanges && (
-            <span className="flex items-center gap-2 text-[#ceab7a] text-sm">
-              <AlertTriangle size={16} />
+            <span className="flex items-center gap-1.5 text-[#ceab7a] text-xs sm:text-sm font-medium">
+              <AlertTriangle size={15} />
               Unsaved changes
             </span>
           )}
           <button
             onClick={handleSave}
             disabled={isSaving || !hasUnsavedChanges}
-            className="flex items-center gap-2 px-6 py-3 bg-[#ceab7a] hover:bg-[#b89565] text-black font-medium rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#ceab7a] hover:bg-[#b89565] text-black font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] text-sm"
           >
             {isSaving ? <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" /> : <Save size={18} />}
             Save Settings
@@ -623,9 +651,9 @@ export default function Settings({ section }: { section: string }) {
         {/* STATS DELETE MODAL */}
         <AnimatePresence>
           {statsDeleteModal.isOpen && statsDeleteModal.index !== null && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setStatsDeleteModal({isOpen: false, index: null})} />
-              <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+            <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isDeleting && setStatsDeleteModal({isOpen: false, index: null})} aria-hidden="true" />
+              <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-sm bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden" role="dialog" aria-modal="true">
                 <div className="p-6 text-center space-y-4">
                   <div className="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-2">
                     <AlertTriangle size={32} strokeWidth={1.5} />
@@ -636,8 +664,8 @@ export default function Settings({ section }: { section: string }) {
                   </p>
                 </div>
                 
-                <div className="p-6 border-t border-white/5 bg-[#050505] flex gap-3">
-                  <button onClick={() => setStatsDeleteModal({isOpen: false, index: null})} disabled={isDeleting} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors border border-white/10 disabled:opacity-50">
+                <div className="p-4 sm:p-6 border-t border-white/5 bg-[#050505] flex gap-3">
+                  <button onClick={() => setStatsDeleteModal({isOpen: false, index: null})} disabled={isDeleting} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors border border-white/10 disabled:opacity-50 min-h-[44px]">
                     Cancel
                   </button>
                   <button 
@@ -654,7 +682,7 @@ export default function Settings({ section }: { section: string }) {
                       }, 400);
                     }} 
                     disabled={isDeleting} 
-                    className="flex-1 px-4 py-3 rounded-xl text-sm font-medium bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors flex justify-center items-center"
+                    className="flex-1 px-4 py-3 rounded-xl text-sm font-bold bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/30 transition-colors flex justify-center items-center min-h-[44px]"
                   >
                     {isDeleting ? <span className="w-5 h-5 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin"></span> : 'Delete Statistic'}
                   </button>
@@ -668,16 +696,23 @@ export default function Settings({ section }: { section: string }) {
         {/* SOCIAL ADD/EDIT MODAL */}
       <AnimatePresence>
         {socialModal.isOpen && (socialModal.mode === 'add' || socialModal.mode === 'edit') && socialModal.item && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))} />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
-              <div className="p-6 border-b border-white/5">
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))} aria-hidden="true" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col" role="dialog" aria-modal="true">
+              <div className="p-5 sm:p-6 border-b border-white/5 flex items-center justify-between shrink-0">
                 <h3 className="text-lg font-serif text-white">{socialModal.mode === 'add' ? 'Add Social Link' : 'Edit Social Link'}</h3>
+                <button 
+                  onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))}
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X size={18} />
+                </button>
               </div>
               
-              <div className="p-6 space-y-5">
+              <div className="p-5 sm:p-6 space-y-5 overflow-y-auto custom-scrollbar flex-1">
                 <div className="space-y-2">
-                  <label className="text-[11px] text-gray-500 uppercase tracking-widest block">Platform *</label>
+                  <label className="text-[11px] text-gray-500 uppercase tracking-widest block font-medium">Platform *</label>
                   <select
                     value={socialModal.item.iconName}
                     onChange={(e) => {
@@ -688,7 +723,7 @@ export default function Settings({ section }: { section: string }) {
                         return { ...prev, item: { ...prev.item, iconName: selected, platform: newName } };
                       });
                     }}
-                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#ceab7a] focus:outline-none appearance-none">
+                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#ceab7a] focus:outline-none appearance-none min-h-[44px] cursor-pointer">
                     <option value="" disabled>Select platform</option>
                     {SOCIAL_PLATFORMS.map(p => (
                       <option key={p} value={p}>{p}</option>
@@ -697,34 +732,34 @@ export default function Settings({ section }: { section: string }) {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[11px] text-gray-500 uppercase tracking-widest block">Display Name</label>
+                  <label className="text-[11px] text-gray-500 uppercase tracking-widest block font-medium">Display Name</label>
                   <input
                     type="text"
                     value={socialModal.item.platform}
                     onChange={(e) => setSocialModal(prev => prev.item ? { ...prev, item: { ...prev.item, platform: e.target.value } } : prev)}
-                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#ceab7a] focus:outline-none"
+                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#ceab7a] focus:outline-none min-h-[44px]"
                     placeholder="e.g. Follow us on X"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[11px] text-gray-500 uppercase tracking-widest block">URL *</label>
+                  <label className="text-[11px] text-gray-500 uppercase tracking-widest block font-medium">URL *</label>
                   <input
                     type="text"
                     value={socialModal.item.url}
                     onChange={(e) => setSocialModal(prev => prev.item ? { ...prev, item: { ...prev.item, url: e.target.value } } : prev)}
-                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#ceab7a] focus:outline-none font-mono text-sm"
+                    className="w-full bg-[#151515] border border-white/10 rounded-xl px-4 py-3 text-white focus:border-[#ceab7a] focus:outline-none font-mono text-sm min-h-[44px]"
                     placeholder="https://"
                   />
                 </div>
 
               </div>
               
-              <div className="p-6 border-t border-white/5 bg-[#050505] flex justify-end gap-3">
-                <button onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))} className="px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors">
+              <div className="p-4 sm:p-6 border-t border-white/5 bg-[#050505] flex justify-end gap-3 shrink-0">
+                <button onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))} className="px-5 py-2.5 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors min-h-[42px]">
                   Cancel
                 </button>
-                <button onClick={saveSocialLink} className="px-5 py-2.5 rounded-xl text-sm font-medium bg-[#ceab7a] text-black hover:bg-[#b08d5c] transition-colors">
+                <button onClick={saveSocialLink} className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-[#ceab7a] text-black hover:bg-[#b08d5c] transition-colors min-h-[42px]">
                   {socialModal.mode === 'add' ? 'Add Social' : 'Save Changes'}
                 </button>
               </div>
@@ -733,9 +768,9 @@ export default function Settings({ section }: { section: string }) {
         )}
 
         {socialModal.isOpen && socialModal.mode === 'delete' && socialModal.item && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isDeleting && setSocialModal(prev => ({...prev, isOpen: false}))} />
-            <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-sm bg-[#0a0a0a] border border-red-500/20 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isDeleting && setSocialModal(prev => ({...prev, isOpen: false}))} aria-hidden="true" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} className="relative w-full max-w-sm bg-[#0a0a0a] border border-red-500/20 rounded-2xl shadow-2xl overflow-hidden" role="dialog" aria-modal="true">
               <div className="p-6 text-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-2">
                   <AlertTriangle size={32} strokeWidth={1.5} />
@@ -746,11 +781,11 @@ export default function Settings({ section }: { section: string }) {
                 </p>
               </div>
               
-              <div className="p-6 border-t border-white/5 bg-[#050505] flex gap-3">
-                <button disabled={isDeleting} onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors disabled:opacity-50">
+              <div className="p-4 sm:p-6 border-t border-white/5 bg-[#050505] flex gap-3">
+                <button disabled={isDeleting} onClick={() => setSocialModal(prev => ({...prev, isOpen: false}))} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors disabled:opacity-50 min-h-[44px]">
                   Cancel
                 </button>
-                <button disabled={isDeleting} onClick={confirmDeleteSocial} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 flex justify-center">
+                <button disabled={isDeleting} onClick={confirmDeleteSocial} className="flex-1 px-4 py-3 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition-colors disabled:opacity-50 flex justify-center items-center min-h-[44px]">
                   {isDeleting ? 'Deleting...' : 'Delete Social Link'}
                 </button>
               </div>

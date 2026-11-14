@@ -40,18 +40,19 @@ export default function MediaUploadCard({
         ) : image ? (
           <>
             <img src={image} className={`w-full h-full ${objectFit}`} alt={label} />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[2px]">
-              <label className="p-2 bg-white/10 hover:bg-white/20 rounded-full cursor-pointer text-white transition-colors" title="Replace Image">
-                <Upload size={16} />
+            <div className="absolute top-2 right-2 flex items-center gap-1.5 sm:inset-0 sm:top-0 sm:right-0 sm:bg-black/50 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity sm:justify-center sm:gap-3 sm:backdrop-blur-[2px]">
+              <label className="p-2 bg-black/80 backdrop-blur-md border border-white/15 sm:border-transparent sm:bg-white/20 sm:hover:bg-white/30 rounded-lg cursor-pointer text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center shadow-lg" title="Replace Image" aria-label="Replace Image">
+                <Upload size={15} />
                 <input type="file" accept="image/*" className="hidden" onChange={onFileSelect} />
               </label>
               <button 
                 type="button" 
                 onClick={onRemove} 
-                className="p-2 bg-red-500/80 hover:bg-red-500 rounded-full text-white transition-colors"
+                className="p-2 bg-red-500/90 hover:bg-red-600 sm:bg-red-500/80 sm:hover:bg-red-500 rounded-lg text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center shadow-lg"
                 title="Remove Image"
+                aria-label="Remove Image"
               >
-                <X size={16}/>
+                <X size={15}/>
               </button>
             </div>
           </>

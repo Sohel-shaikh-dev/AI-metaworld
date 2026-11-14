@@ -57,9 +57,32 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
     }
   };
 
-  const cancelNavigation = () => {
+  const cancelNavigation = useCallback(() => {
     setPendingAction(null);
-  };
+  }, []);
+
+  // Lock body scroll when unsaved changes modal is open
+  useEffect(() => {
+    if (pendingAction) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [pendingAction]);
+
+  // Handle Escape key to cancel unsaved modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && pendingAction) {
+        cancelNavigation();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pendingAction, cancelNavigation]);
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -136,11 +159,11 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
                 </p>
               </div>
               
-              <div className="p-6 border-t border-white/5 bg-[#050505] flex gap-3">
-                <button onClick={cancelNavigation} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors border border-white/10">
+              <div className="p-4 sm:p-6 border-t border-white/5 bg-[#050505] flex gap-3">
+                <button onClick={cancelNavigation} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors border border-white/10 min-h-[44px] flex items-center justify-center">
                   Stay
                 </button>
-                <button onClick={confirmNavigation} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium bg-[#ceab7a] text-black hover:bg-[#b08d5c] transition-colors flex justify-center">
+                <button onClick={confirmNavigation} className="flex-1 px-4 py-3 rounded-xl text-sm font-bold bg-[#ceab7a] text-black hover:bg-white transition-colors flex items-center justify-center min-h-[44px]">
                   Leave Without Saving
                 </button>
               </div>
