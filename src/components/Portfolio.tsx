@@ -37,7 +37,7 @@ type ProjectModalContent = {
     videoUrl?: string;
     supportingImages?: string[];
     technologies?: string[];
-    
+
     // New Branding Fields
     brandOverview?: string;
     brandChallenge?: string;
@@ -78,10 +78,10 @@ const CATEGORIES = [
 
 const BrandAssetGallery = ({ assets, title, category, compact = false }: { assets: any[], title?: string, category: string, compact?: boolean }) => {
   if (!assets || assets.length === 0) return null;
-  
+
   // Responsive grid logic based on asset count and category
   let gridClass = "grid grid-cols-1 gap-6";
-  
+
   if (category === 'icon') {
     gridClass = assets.length <= 2 ? "flex justify-center gap-6" : "grid grid-cols-2 sm:grid-cols-4 gap-6";
   } else if (assets.length === 1) {
@@ -110,27 +110,27 @@ const BrandAssetGallery = ({ assets, title, category, compact = false }: { asset
            if (category === 'packaging' && asset.type?.toLowerCase().includes('mockup')) {
                objectFit = "object-cover";
            }
-           
+
            const isMasonry = assets.length >= 5 && category !== 'icon';
-           
+
            return (
-             <motion.div 
-               initial={{ opacity: 0, y: 20 }} 
-               whileInView={{ opacity: 1, y: 0 }} 
-               viewport={{ once: true }} 
-               transition={{ delay: (i % 5) * 0.1 }} 
-               key={asset.id || i} 
+             <motion.div
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: (i % 5) * 0.1 }}
+               key={asset.id || i}
                className={`rounded-2xl overflow-hidden border border-white/5 bg-[#050505] flex flex-col items-center justify-center relative group
-                  ${isMasonry ? 'break-inside-avoid mb-6' : ''} 
+                  ${isMasonry ? 'break-inside-avoid mb-6' : ''}
                   ${assets.length === 1 && category !== 'icon' ? 'w-full max-w-4xl mx-auto' : 'w-full h-full'}
                   ${category === 'logo' || category === 'icon' ? 'p-6 md:p-12' : 'p-2 md:p-4'}
                `}
              >
-               <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} 
-                 src={asset.url || asset} 
-                 alt={asset.caption || asset.type || category} 
-                 className={`w-full ${category === 'icon' ? 'max-w-[80px]' : 'max-h-[80vh]'} ${objectFit} group-hover:scale-[1.02] transition-transform duration-700`} 
-                 loading="lazy" 
+               <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
+                 src={asset.url || asset}
+                 alt={asset.caption || asset.type || category}
+                 className={`w-full ${category === 'icon' ? 'max-w-[80px]' : 'max-h-[80vh]'} ${objectFit} group-hover:scale-[1.02] transition-transform duration-700`}
+                 loading="lazy"
                />
                {(asset.type || asset.caption) && category !== 'icon' && category !== 'logo' && (
                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -154,9 +154,9 @@ const BrandAssetGallery = ({ assets, title, category, compact = false }: { asset
 
 const FashionAssetGallery = ({ assets, title }: { assets: string[], title?: string }) => {
   if (!assets || assets.length === 0) return null;
-  
+
   let gridClass = "grid grid-cols-1 gap-6";
-  
+
   if (assets.length === 1) {
     gridClass = "flex justify-center";
   } else if (assets.length === 2) {
@@ -180,21 +180,21 @@ const FashionAssetGallery = ({ assets, title }: { assets: string[], title?: stri
         {assets.map((asset, i) => {
            const isMasonry = assets.length >= 5;
            return (
-             <motion.div 
-               initial={{ opacity: 0, y: 20 }} 
-               whileInView={{ opacity: 1, y: 0 }} 
-               viewport={{ once: true }} 
-               transition={{ delay: (i % 5) * 0.1 }} 
-               key={i} 
+             <motion.div
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: (i % 5) * 0.1 }}
+               key={i}
                className={`rounded-2xl overflow-hidden border border-white/5 bg-[#050505] flex flex-col items-center justify-center relative group
-                  ${isMasonry ? 'break-inside-avoid mb-6' : ''} 
+                  ${isMasonry ? 'break-inside-avoid mb-6' : ''}
                   ${assets.length === 1 ? 'w-full max-w-4xl mx-auto' : 'w-full h-full'}
                `}
              >
-               <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} 
-                 src={asset} 
-                 className={`w-full max-h-[85vh] object-contain group-hover:scale-[1.02] transition-transform duration-700`} 
-                 loading="lazy" 
+               <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
+                 src={asset}
+                 className={`w-full max-h-[85vh] object-contain group-hover:scale-[1.02] transition-transform duration-700`}
+                 loading="lazy"
                />
              </motion.div>
            );
@@ -238,7 +238,7 @@ const Portfolio = memo(function Portfolio() {
   useEffect(() => {
     const handleSyncEvent = (e: any) => {
       const state = e.detail;
-      
+
       if (state.type === 'nested_category') {
         setSelectedCategory(state.nestedId);
         setSelectedProject(null);
@@ -255,16 +255,16 @@ const Portfolio = memo(function Portfolio() {
         setSelectedProject(null);
       }
     };
-    
+
     window.addEventListener('sync-navigation-state', handleSyncEvent);
-    
+
     // Fallback for old hardcoded event just in case
     const handleCloseEvent = () => {
       setSelectedProject(null);
       setSelectedCategory(null);
     };
     window.addEventListener('close-project-modal', handleCloseEvent);
-    
+
     // Direct load handling
     if (window.location.hash.startsWith('#project-') && normalizedProjects.length > 0) {
       const projectId = window.location.hash.replace('#project-', '');
@@ -275,7 +275,7 @@ const Portfolio = memo(function Portfolio() {
         window.history.replaceState({ __aiMetaWorld: true, type: 'nested_project', parentSection: 'work', nestedId: projectId }, '', window.location.hash);
       }
     }
-    
+
     return () => {
       window.removeEventListener('sync-navigation-state', handleSyncEvent);
       window.removeEventListener('close-project-modal', handleCloseEvent);
@@ -288,12 +288,12 @@ const Portfolio = memo(function Portfolio() {
         .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
-        
+
       if (!error && data) {
         setNormalizedProjects(data as Project[]);
       }
     };
-    
+
     fetchProjects();
 
     const channel = supabase
@@ -336,12 +336,12 @@ const Portfolio = memo(function Portfolio() {
         <h3 className="text-[16px] font-serif text-white mb-6 tracking-wide">Key Deliverables</h3>
         <ul className="space-y-4 text-[14px] text-gray-400">
           {deliverables.map((item, idx) => (
-            <motion.li 
+            <motion.li
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 + idx * 0.1 }}
-              key={idx} 
+              key={idx}
               className="flex items-start gap-3"
             >
               <div className="w-1.5 h-1.5 rounded-full bg-[#ceab7a] mt-1.5 shrink-0 shadow-[0_0_8px_rgba(206,171,122,0.8)]" />
@@ -349,9 +349,9 @@ const Portfolio = memo(function Portfolio() {
             </motion.li>
           ))}
         </ul>
-        
+
         {liveUrl && (
-          <motion.a 
+          <motion.a
             href={liveUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -374,7 +374,7 @@ const Portfolio = memo(function Portfolio() {
     if (project.type === 'website') {
       return (
         <div className="flex flex-col gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1000px] mx-auto pb-12">
-          
+
           <div className="flex flex-col md:flex-row gap-8 justify-between items-start border-b border-white/5 pb-12">
             <div className="w-full md:w-1/3">
                <h4 className="text-[12px] uppercase tracking-[0.2em] text-[#ceab7a] font-semibold mb-2">mc.projectStatus</h4>
@@ -436,7 +436,7 @@ const Portfolio = memo(function Portfolio() {
                    </ul>
                 </div>
              )}
-             
+
              {mc.technologies && mc.technologies.length > 0 && (
                 <div>
                    <h4 className="text-[12px] uppercase tracking-[0.2em] text-[#ceab7a] font-semibold mb-6 flex items-center gap-3">
@@ -454,15 +454,27 @@ const Portfolio = memo(function Portfolio() {
              )}
           </div>
 
-          {mc.supportingImages && mc.supportingImages.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-12 border-t border-white/5">
-               {mc.supportingImages.map((img: string, idx: number) => (
-                 <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.2 }} key={idx} className="aspect-video rounded-[20px] overflow-hidden border border-white/10 bg-[#101010] group shadow-2xl">
+          {(() => {
+            const rawDS = Array.isArray(mc.desktopScreens)
+              ? mc.desktopScreens.filter((s: any) => typeof s === 'string' && s.trim() !== '')
+              : [];
+            const rawSI = Array.isArray(mc.supportingImages)
+              ? mc.supportingImages.filter((s: any) => typeof s === 'string' && s.trim() !== '')
+              : [];
+            const screens = rawDS.length > 0 ? rawDS : rawSI;
+
+            if (screens.length === 0) return null;
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-12 border-t border-white/5">
+                {screens.map((img: string, idx: number) => (
+                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.2 }} key={idx} className="aspect-video rounded-[20px] overflow-hidden border border-white/10 bg-[#101010] group shadow-2xl">
                     <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700" />
-                 </motion.div>
-               ))}
-            </div>
-          )}
+                  </motion.div>
+                ))}
+              </div>
+            );
+          })()}
 
           <div className="mt-8 pt-12 border-t border-white/5 flex flex-col items-center text-center">
              {mc.liveUrl && (
@@ -470,7 +482,7 @@ const Portfolio = memo(function Portfolio() {
                    Visit Live Website <ExternalLink size={18} />
                 </a>
              )}
-             
+
              <h3 className="text-2xl font-serif text-white mb-3">Like what you see?</h3>
              <p className="text-gray-400 mb-8 max-w-md mx-auto">Let's collaborate to build a premium digital experience tailored specifically for your brand.</p>
              <button onClick={() => { closeProject(); setTimeout(() => { window.location.href = "#contact"; }, 50); }} className="px-6 py-3 border border-white/20 hover:border-[#ceab7a] hover:bg-[#ceab7a]/10 rounded-full text-white text-[13px] tracking-wide transition-all duration-300">
@@ -486,10 +498,10 @@ const Portfolio = memo(function Portfolio() {
 
                   {project.type === 'branding' && (
             <div className="flex flex-col gap-16 md:gap-20 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1200px] mx-auto pb-12 w-full">
-              
+
               {/* Brand Hero & Snapshot - Compact Editorial */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-                
+
                 {/* Left Metadata Column */}
                 <div className="lg:col-span-3 flex flex-col gap-8 pt-2">
                   <div className="space-y-6">
@@ -511,7 +523,7 @@ const Portfolio = memo(function Portfolio() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Right Hero Visual Column */}
                 <div className="lg:col-span-9">
                   {(project.image || mc.mainImage) && (
@@ -553,25 +565,25 @@ const Portfolio = memo(function Portfolio() {
                   )}
 
                   {/* Dynamic Asset Galleries */}
-                  
+
                   {/* Logo System */}
-                  <BrandAssetGallery 
-                    assets={(mc.brandingAssets || []).filter((a: any) => a.category === 'logo')} 
-                    title="Logo System" 
-                    category="logo" 
+                  <BrandAssetGallery
+                    assets={(mc.brandingAssets || []).filter((a: any) => a.category === 'logo')}
+                    title="Logo System"
+                    category="logo"
                   />
 
                   {/* Icon System */}
-                  <BrandAssetGallery 
-                    assets={(mc.brandingAssets || []).filter((a: any) => a.category === 'icon')} 
-                    title="Icon System" 
-                    category="icon" 
+                  <BrandAssetGallery
+                    assets={(mc.brandingAssets || []).filter((a: any) => a.category === 'icon')}
+                    title="Icon System"
+                    category="icon"
                   />
 
                   {/* Color & Typography - Combined Grid if both exist */}
                   {(mc.colors && mc.colors.length > 0 || mc.typography?.primary) && (
                     <div className={`grid grid-cols-1 ${(mc.colors && mc.colors.length > 0 && mc.typography?.primary) ? 'lg:grid-cols-2' : ''} gap-16 pt-10`}>
-                      
+
                       {/* Color System */}
                       {mc.colors && mc.colors.length > 0 && (
                         <div className="space-y-8">
@@ -608,7 +620,7 @@ const Portfolio = memo(function Portfolio() {
                                 0 1 2 3 4 5 6 7 8 9 ! @ # % & *
                               </div>
                             </motion.div>
-                            
+
                             {mc.typography.secondary && (
                               <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
                                 <div className="text-[#ceab7a] text-[10px] uppercase tracking-[0.2em] mb-3">Secondary Typeface</div>
@@ -628,21 +640,21 @@ const Portfolio = memo(function Portfolio() {
 
                   {/* Responsive Category Galleries */}
                   {['stationery', 'print', 'packaging', 'digital'].map(category => (
-                    <BrandAssetGallery 
+                    <BrandAssetGallery
                       key={category}
-                      assets={(mc.brandingAssets || []).filter((a: any) => a.category === category)} 
-                      title={`${category.charAt(0).toUpperCase() + category.slice(1)} Collateral`} 
-                      category={category} 
+                      assets={(mc.brandingAssets || []).filter((a: any) => a.category === category)}
+                      title={`${category.charAt(0).toUpperCase() + category.slice(1)} Collateral`}
+                      category={category}
                     />
                   ))}
 
                   {/* Showcase / Brand Applications */}
-                  <BrandAssetGallery 
-                    assets={(mc.brandingAssets || []).filter((a: any) => a.showcase)} 
-                    title="Brand Applications" 
-                    category="showcase" 
+                  <BrandAssetGallery
+                    assets={(mc.brandingAssets || []).filter((a: any) => a.showcase)}
+                    title="Brand Applications"
+                    category="showcase"
                   />
-                  
+
                   {/* Tools and Result */}
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-12 border-t border-white/5 pt-16">
                      {mc.technologies && mc.technologies.length > 0 && (
@@ -657,7 +669,7 @@ const Portfolio = memo(function Portfolio() {
                            </div>
                         </div>
                      )}
-                     
+
                      {mc.result && (
                         <div className={!mc.technologies || mc.technologies.length === 0 ? "md:col-span-12" : "md:col-span-8"}>
                            <h4 className="text-[12px] uppercase tracking-[0.2em] text-[#ceab7a] font-semibold mb-6 flex items-center gap-3">
@@ -701,7 +713,7 @@ const Portfolio = memo(function Portfolio() {
                 <span className="text-[#ceab7a] text-xs font-bold tracking-[0.3em] uppercase">AI Fashion Try-On</span>
                 <h3 className="text-4xl md:text-5xl lg:text-6xl font-serif text-white leading-tight">{project.title}</h3>
                 {project.desc && <p className="text-gray-400 text-lg leading-relaxed max-w-2xl">{project.desc}</p>}
-                
+
                 {/* 2. Project Snapshot */}
                 <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 mt-4 border-t border-b border-white/10 py-6 w-full">
                    {mc.clientName && (
@@ -786,15 +798,15 @@ const Portfolio = memo(function Portfolio() {
                     <div className="w-8 h-[1px] bg-white/30" /> PROMOTIONAL VIDEO <div className="w-8 h-[1px] bg-white/30" />
                   </h4>
                   <div className="max-w-4xl mx-auto rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative bg-black flex justify-center items-center">
-                     <video 
-                        src={mc.videoUrl} 
-                        controls 
-                        className="w-full max-h-[80vh] object-contain" 
+                     <video
+                        src={mc.videoUrl}
+                        controls
+                        className="w-full max-h-[80vh] object-contain"
                      />
                   </div>
                 </div>
               )}
-              
+
               {/* 8. Deliverables & Tools */}
               {( (mc.deliverables && mc.deliverables.length > 0) || (mc.technologies && mc.technologies.length > 0) ) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto border-t border-white/5 pt-16 w-full">
@@ -836,7 +848,7 @@ const Portfolio = memo(function Portfolio() {
 
         {project.type === 'growth' && (
           <div className="flex flex-col gap-24 max-w-[1200px] mx-auto w-full">
-            
+
             {/* 1. HERO / DASHBOARD PREVIEW */}
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-16 items-center">
               <div className="w-full lg:w-[35%] flex flex-col gap-6 order-2 lg:order-1">
@@ -853,7 +865,7 @@ const Portfolio = memo(function Portfolio() {
                   {project.desc}
                 </p>
               </div>
-              
+
               {project.image && (
                 <div className="w-full lg:w-[65%] order-1 lg:order-2">
                   <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="rounded-3xl border border-white/10 bg-[#0a0a0a] shadow-2xl relative p-2">
@@ -906,10 +918,10 @@ const Portfolio = memo(function Portfolio() {
                   <div className="w-8 h-[1px] bg-white/30" /> DASHBOARD PAGES <div className="w-8 h-[1px] bg-white/30" />
                 </h4>
                 <div className={`grid gap-6 ${
-                  mc.dashboards.length === 1 ? 'grid-cols-1 w-full' : 
-                  mc.dashboards.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 
-                  mc.dashboards.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 
-                  mc.dashboards.length === 4 ? 'grid-cols-1 md:grid-cols-2' : 
+                  mc.dashboards.length === 1 ? 'grid-cols-1 w-full' :
+                  mc.dashboards.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
+                  mc.dashboards.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
+                  mc.dashboards.length === 4 ? 'grid-cols-1 md:grid-cols-2' :
                   'grid-cols-1 md:grid-cols-2'
                 }`}>
                   {mc.dashboards.map((img: string, i: number) => (
@@ -995,7 +1007,7 @@ const Portfolio = memo(function Portfolio() {
                   </div>
                 )}
               </div>
-              
+
               {project.image && (
                 <div className="w-full lg:w-[65%] order-1 lg:order-2">
                   <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
@@ -1012,10 +1024,10 @@ const Portfolio = memo(function Portfolio() {
                   <div className="w-8 h-[1px] bg-white/30" /> PRODUCT SHOWCASE <div className="w-8 h-[1px] bg-white/30" />
                 </h4>
                 <div className={`grid gap-12 ${
-                  mc.products.length === 1 ? 'grid-cols-1 w-full max-w-4xl mx-auto' : 
-                  mc.products.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 
-                  mc.products.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 
-                  mc.products.length === 4 ? 'grid-cols-1 sm:grid-cols-2' : 
+                  mc.products.length === 1 ? 'grid-cols-1 w-full max-w-4xl mx-auto' :
+                  mc.products.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
+                  mc.products.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
+                  mc.products.length === 4 ? 'grid-cols-1 sm:grid-cols-2' :
                   'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
                 }`}>
                   {mc.products.map((prod: any, i: number) => {
@@ -1042,7 +1054,7 @@ const Portfolio = memo(function Portfolio() {
     );
   };
 
-  const filteredProjects = selectedCategory 
+  const filteredProjects = selectedCategory
     ? normalizedProjects.filter(p => p.type === selectedCategory)
     : [];
 
@@ -1050,8 +1062,8 @@ const Portfolio = memo(function Portfolio() {
     <>
       <section id="work" className="py-24 md:py-32 relative bg-[#050505] overflow-hidden min-h-screen flex items-start border-y border-white/5">
         <div className="max-w-[1200px] mx-auto px-6 relative w-full flex flex-col items-center pt-8">
-          
-          <motion.div 
+
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -1065,21 +1077,21 @@ const Portfolio = memo(function Portfolio() {
               </span>
               <div className="w-12 h-[1px] bg-[#ceab7a]"></div>
             </motion.div>
-            
+
             <motion.h2 variants={itemVariants} className="font-serif text-[32px] sm:text-[42px] md:text-[48px] leading-[1.2] mb-6 max-w-2xl">
               <span className="block text-white">Projects Built To Make</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#e8d3b5] via-[#ceab7a] to-[#a8824a]">
                 Brands Impossible To Ignore.
               </span>
             </motion.h2>
-            
+
             <motion.p variants={itemVariants} className="text-gray-400 text-[14px] md:text-[16px] leading-[1.6] max-w-xl">
               We design cinematic digital experiences that combine strategy, AI and creativity to help brands grow faster.
             </motion.p>
           </motion.div>
 
           {/* LEVEL 1: CATEGORY LISTING */}
-          <motion.div 
+          <motion.div
             key="categories"
             variants={containerVariants}
             initial="hidden"
@@ -1088,7 +1100,7 @@ const Portfolio = memo(function Portfolio() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8 w-full"
           >
             {CATEGORIES.map((cat, idx) => (
-              <motion.div 
+              <motion.div
                 key={cat.id}
                 onClick={() => openCategory(cat.id)}
                 variants={itemVariants}
@@ -1098,17 +1110,17 @@ const Portfolio = memo(function Portfolio() {
                   <div className="absolute top-6 right-6 w-12 h-12 rounded-xl bg-black/60 backdrop-blur-md border border-white/10 group-hover:border-[#ceab7a]/50 flex items-center justify-center z-20 transition-colors duration-300">
                     <cat.icon size={20} className="text-[#ceab7a] drop-shadow-[0_0_8px_rgba(206,171,122,0.5)]" />
                   </div>
-                  
-                  <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} 
-                    src={cat.image} 
-                    alt={cat.title} 
+
+                  <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
+                    src={cat.image}
+                    alt={cat.title}
                     loading="lazy"
                     className="w-[95%] sm:w-[85%] lg:w-[95%] mx-auto object-contain object-bottom group-hover:scale-[1.03] transition-transform duration-700 ease-out z-10 drop-shadow-2xl translate-y-4 group-hover:translate-y-2 opacity-80 group-hover:opacity-100"
                   />
-                  
+
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent z-10" />
                 </div>
-                
+
                 <div className="p-6 sm:p-8 pt-4 bg-[#0a0a0a] border-t border-white/5 relative z-20 flex flex-col flex-1">
                   <h3 className="text-[20px] sm:text-[24px] font-serif text-white mb-3 group-hover:text-[#ceab7a] transition-colors duration-300 uppercase tracking-wide">
                     {cat.title}
@@ -1116,7 +1128,7 @@ const Portfolio = memo(function Portfolio() {
                   <p className="text-gray-400 text-[14px] sm:text-[15px] leading-[1.6] mb-8 flex-1">
                     {cat.desc}
                   </p>
-                  
+
                   <div className="flex items-center justify-between border-t border-white/5 pt-6 mt-2">
                     <span className="text-[#ceab7a] text-[14px] font-medium tracking-wide group-hover:tracking-widest transition-all duration-300 uppercase">
                       View Projects
@@ -1129,7 +1141,7 @@ const Portfolio = memo(function Portfolio() {
           </motion.div>
 
           {/* Stats Row */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -1153,7 +1165,7 @@ const Portfolio = memo(function Portfolio() {
             ))}
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -1174,7 +1186,7 @@ const Portfolio = memo(function Portfolio() {
         <AnimatePresence>
           {/* LEVEL 2: CATEGORY PROJECT LIST */}
           {selectedCategory && !selectedProject && (
-            <motion.div 
+            <motion.div
               key="category-modal"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1184,7 +1196,7 @@ const Portfolio = memo(function Portfolio() {
             >
               <div className="min-h-screen px-4 py-12 sm:p-6 md:p-12 flex flex-col items-center">
                 <div className="w-full max-w-[1200px]">
-                  <button 
+                  <button
                     onClick={() => closeCategory()}
                     className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors w-fit group mb-10"
                   >
@@ -1214,7 +1226,7 @@ const Portfolio = memo(function Portfolio() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8 w-full pb-12">
                       {filteredProjects.map((project, idx) => (
-                        <motion.div 
+                        <motion.div
                           key={project.id}
                           onClick={() => openProject(project)}
                           initial={{ opacity: 0, y: 20 }}
@@ -1227,9 +1239,9 @@ const Portfolio = memo(function Portfolio() {
                               <div className="absolute top-8 left-8 w-10 h-10 rounded-xl bg-black/80 backdrop-blur-md border border-[#ceab7a]/30 flex items-center justify-center z-20">
                                 <span className="text-[#ceab7a] font-serif text-[15px] font-bold">{`0${idx + 1}`.slice(-2)}</span>
                               </div>
-                              <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} 
-                                src={project.image} 
-                                alt={project.title} 
+                              <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
+                                src={project.image}
+                                alt={project.title}
                                 loading="lazy"
                                 className="block w-full h-auto relative z-10 transition-transform duration-700 ease-out group-hover:scale-[1.02]"
                                 style={{ width: "100%", height: "auto", display: "block" }}
@@ -1240,18 +1252,18 @@ const Portfolio = memo(function Portfolio() {
                               <div className="absolute top-6 left-6 w-10 h-10 rounded-xl bg-black/60 backdrop-blur-md border border-[#ceab7a]/30 flex items-center justify-center z-20">
                                 <span className="text-[#ceab7a] font-serif text-[15px] font-bold">{`0${idx + 1}`.slice(-2)}</span>
                               </div>
-                              
-                              <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} 
-                                src={project.image} 
-                                alt={project.title} 
+
+                              <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
+                                src={project.image}
+                                alt={project.title}
                                 loading="lazy"
                                 className="w-[95%] mx-auto object-contain object-bottom group-hover:scale-[1.03] transition-transform duration-700 ease-out z-10 drop-shadow-2xl translate-y-4 group-hover:translate-y-2"
                               />
-                              
+
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent z-10" />
                             </div>
                           )}
-                          
+
                           <div className="p-6 pt-4 bg-[#0a0a0a] border-t border-white/5 relative z-20 flex flex-col flex-1">
                             <h3 className="text-[20px] sm:text-[24px] font-serif text-white mb-3 group-hover:text-[#ceab7a] transition-colors duration-300">
                               {project.title}
@@ -1259,7 +1271,7 @@ const Portfolio = memo(function Portfolio() {
                             <p className="text-gray-400 text-[14px] leading-[1.6] mb-8 flex-1 line-clamp-3">
                               {project.desc}
                             </p>
-                            
+
                             {project.tags && project.tags.length > 0 && (
                               <div className="flex flex-wrap items-center gap-2 mb-6">
                                 {project.tags.slice(0, 3).map(tag => (
@@ -1288,7 +1300,7 @@ const Portfolio = memo(function Portfolio() {
 
           {/* LEVEL 3: PROJECT DETAIL PORTAL */}
           {selectedProject && (
-            <motion.div 
+            <motion.div
               key="project-modal"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1298,7 +1310,7 @@ const Portfolio = memo(function Portfolio() {
               className="fixed inset-0 z-[9999] bg-[#050505] overflow-y-auto"
             >
               <div className="min-h-screen px-4 py-12 sm:p-6 md:p-12 flex items-start justify-center">
-                <motion.div 
+                <motion.div
                   initial={{ y: 50, opacity: 0, scale: 0.95 }}
                   animate={{ y: 0, opacity: 1, scale: 1 }}
                   exit={{ y: 20, opacity: 0, scale: 0.95 }}
@@ -1318,8 +1330,8 @@ const Portfolio = memo(function Portfolio() {
                         {selectedProject.desc}
                       </p>
                     </div>
-                    
-                    <button 
+
+                    <button
                       aria-label="Close Project Details"
                       onClick={closeProject}
                       className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all duration-300 hover:scale-110 text-white hover:text-[#ceab7a]"
@@ -1343,4 +1355,3 @@ const Portfolio = memo(function Portfolio() {
 });
 
 export default Portfolio;
-

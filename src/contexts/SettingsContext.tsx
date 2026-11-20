@@ -39,9 +39,9 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
 
   const requestNavigation = useCallback((pathOrAction: string | (() => void)) => {
     if (typeof pathOrAction === 'string' && location.pathname === pathOrAction) return;
-    
+
     const action = typeof pathOrAction === 'string' ? () => navigate(pathOrAction) : pathOrAction;
-    
+
     if (hasUnsavedChanges) {
       setPendingAction(() => action);
     } else {
@@ -142,7 +142,7 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
   return (
     <SettingsContext.Provider value={{ settings, loading, refreshSettings: fetchSettings, hasUnsavedChanges, markDirty, markClean, requestNavigation }}>
       {children}
-      
+
       {/* Unsaved Changes Modal */}
       <AnimatePresence>
         {pendingAction && (
@@ -155,13 +155,13 @@ export const SettingsProvider = ({ children }: { children: React.ReactNode }) =>
                 </div>
                 <h3 className="text-xl font-serif text-white">Unsaved Changes</h3>
                 <p className="text-sm text-gray-400">
-                  You have unsaved changes. Leave this page without saving?
+                  You have unsaved changes. Are you sure you want to leave this page?
                 </p>
               </div>
-              
+
               <div className="p-4 sm:p-6 border-t border-white/5 bg-[#050505] flex gap-3">
                 <button onClick={cancelNavigation} className="flex-1 px-4 py-3 rounded-xl text-sm font-medium text-white hover:bg-white/5 transition-colors border border-white/10 min-h-[44px] flex items-center justify-center">
-                  Stay
+                  Stay on Page
                 </button>
                 <button onClick={confirmNavigation} className="flex-1 px-4 py-3 rounded-xl text-sm font-bold bg-[#ceab7a] text-black hover:bg-white transition-colors flex items-center justify-center min-h-[44px]">
                   Leave Without Saving

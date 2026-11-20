@@ -1,12 +1,16 @@
-import React from 'react';
-import { Upload, X } from 'lucide-react';
+import type { ChangeEvent } from 'react';
+import { Upload, X, ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface MediaUploadCardProps {
   label: string;
   description?: string;
   image: string | null | undefined;
-  onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileSelect: (e: ChangeEvent<HTMLInputElement>) => void;
   onRemove: () => void;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
+  canMoveLeft?: boolean;
+  canMoveRight?: boolean;
   aspectClass?: string;
   objectFit?: 'object-cover' | 'object-contain';
   isLoading?: boolean;
@@ -18,6 +22,10 @@ export default function MediaUploadCard({
   image,
   onFileSelect,
   onRemove,
+  onMoveLeft,
+  onMoveRight,
+  canMoveLeft = false,
+  canMoveRight = false,
   aspectClass = 'aspect-video',
   objectFit = 'object-contain',
   isLoading = false
@@ -30,7 +38,7 @@ export default function MediaUploadCard({
       {description && (
         <p className="text-gray-500 text-[11px] mb-2">{description}</p>
       )}
-      
+
       <div className={`relative ${aspectClass} rounded-xl overflow-hidden group bg-[#151515] border border-white/10 transition-colors hover:border-white/20`}>
         {isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#101010] z-10">
@@ -40,14 +48,36 @@ export default function MediaUploadCard({
         ) : image ? (
           <>
             <img src={image} className={`w-full h-full ${objectFit}`} alt={label} />
-            <div className="absolute top-2 right-2 flex items-center gap-1.5 sm:inset-0 sm:top-0 sm:right-0 sm:bg-black/50 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity sm:justify-center sm:gap-3 sm:backdrop-blur-[2px]">
+            <div className="absolute top-2 right-2 flex items-center gap-1.5 sm:inset-0 sm:top-0 sm:right-0 sm:bg-black/50 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity sm:justify-center sm:gap-2 sm:backdrop-blur-[2px]">
+              {onMoveLeft && canMoveLeft && (
+                <button
+                  type="button"
+                  onClick={onMoveLeft}
+                  className="p-2 bg-black/80 backdrop-blur-md border border-white/15 sm:border-transparent sm:bg-white/20 sm:hover:bg-white/30 rounded-lg text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center shadow-lg"
+                  title="Move Earlier"
+                  aria-label="Move Earlier"
+                >
+                  <ArrowLeft size={15} />
+                </button>
+              )}
               <label className="p-2 bg-black/80 backdrop-blur-md border border-white/15 sm:border-transparent sm:bg-white/20 sm:hover:bg-white/30 rounded-lg cursor-pointer text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center shadow-lg" title="Replace Image" aria-label="Replace Image">
                 <Upload size={15} />
                 <input type="file" accept="image/*" className="hidden" onChange={onFileSelect} />
               </label>
-              <button 
-                type="button" 
-                onClick={onRemove} 
+              {onMoveRight && canMoveRight && (
+                <button
+                  type="button"
+                  onClick={onMoveRight}
+                  className="p-2 bg-black/80 backdrop-blur-md border border-white/15 sm:border-transparent sm:bg-white/20 sm:hover:bg-white/30 rounded-lg text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center shadow-lg"
+                  title="Move Later"
+                  aria-label="Move Later"
+                >
+                  <ArrowRight size={15} />
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onRemove}
                 className="p-2 bg-red-500/90 hover:bg-red-600 sm:bg-red-500/80 sm:hover:bg-red-500 rounded-lg text-white transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center shadow-lg"
                 title="Remove Image"
                 aria-label="Remove Image"
