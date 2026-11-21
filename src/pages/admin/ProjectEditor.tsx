@@ -580,8 +580,8 @@ export default function ProjectEditor() {
               <div className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
                   <div>
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-[#ceab7a]">Desktop Screens</h3>
-                    <p className="text-xs text-gray-500 mt-0.5">High-resolution showcase images for the case study gallery.</p>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-[#ceab7a]">Project Screens & Screenshots</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Showcase screenshots (desktop, mobile, tablet & mixed orientations supported without cropping).</p>
                   </div>
                   <span className="text-xs px-3 py-1 rounded-full bg-[#ceab7a]/10 text-[#ceab7a] border border-[#ceab7a]/20 font-medium self-start sm:self-auto">
                     {websiteScreens.length} {websiteScreens.length === 1 ? 'Screenshot' : 'Screenshots'} Saved
@@ -589,7 +589,7 @@ export default function ProjectEditor() {
                 </div>
 
                 {websiteScreens.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
                     {websiteScreens.map((img: string, i: number) => (
                       <MediaUploadCard
                         key={i}
@@ -613,14 +613,15 @@ export default function ProjectEditor() {
                         onMoveRight={() => moveArrayItem('desktopScreens', i, i + 1)}
                         canMoveLeft={i > 0}
                         canMoveRight={i < websiteScreens.length - 1}
-                        aspectClass="aspect-video"
+                        aspectClass="auto"
+                        objectFit="object-contain"
                       />
                     ))}
                   </div>
                 ) : (
                   <div className="p-8 text-center border border-dashed border-white/10 rounded-2xl bg-[#151515]/50">
-                    <p className="text-sm text-gray-400 mb-1">No desktop screens added yet.</p>
-                    <p className="text-xs text-gray-600">Click below to upload showcase screenshots for this website.</p>
+                    <p className="text-sm text-gray-400 mb-1">No screenshots added yet.</p>
+                    <p className="text-xs text-gray-600">Click below to upload showcase screenshots (desktop, mobile, or mixed).</p>
                   </div>
                 )}
 
@@ -647,7 +648,7 @@ export default function ProjectEditor() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-start">
                   {(modalContent.mockups || []).map((img: string, i: number) => (
                     <MediaUploadCard
                       key={i}
@@ -671,7 +672,8 @@ export default function ProjectEditor() {
                       onMoveRight={() => moveArrayItem('mockups', i, i + 1)}
                       canMoveLeft={i > 0}
                       canMoveRight={i < (modalContent.mockups || []).length - 1}
-                      aspectClass="aspect-square"
+                      aspectClass="auto"
+                      objectFit="object-contain"
                     />
                   ))}
                 </div>
@@ -709,7 +711,7 @@ export default function ProjectEditor() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     {(modalContent.products || []).map((prod: any, i: number) => {
                       const isString = typeof prod === 'string';
                       const img = isString ? prod : prod.image;
@@ -749,7 +751,8 @@ export default function ProjectEditor() {
                                 'danger'
                               );
                             }}
-                            aspectClass="aspect-square"
+                            aspectClass="auto"
+                            objectFit="object-contain"
                           />
                         </div>
                       );
@@ -785,7 +788,7 @@ export default function ProjectEditor() {
                     <h3 className="text-sm font-bold uppercase tracking-widest text-[#ceab7a]">Product Inputs</h3>
                     <span className="text-xs text-gray-500">{(modalContent.productInputs || []).filter(Boolean).length} Inputs</span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 items-start">
                     {(modalContent.productInputs || []).map((img: string, i: number) => (
                       <MediaUploadCard
                         key={i}
@@ -805,7 +808,8 @@ export default function ProjectEditor() {
                             'danger'
                           );
                         }}
-                        aspectClass="aspect-[3/4]"
+                        aspectClass="auto"
+                        objectFit="object-contain"
                       />
                     ))}
                   </div>
@@ -852,7 +856,8 @@ export default function ProjectEditor() {
                             isLoading={isUploadingStates[`before_${i}`]}
                             onFileSelect={(e) => handleGenericImageUpload(e, `before_${i}`, (url) => updateArrayItem('transformations', i, { ...pair, before: url }), 'Before image updated')}
                             onRemove={() => updateArrayItem('transformations', i, { ...pair, before: null })}
-                            aspectClass="aspect-[3/4] max-w-[200px]"
+                            aspectClass="auto"
+                            objectFit="object-contain"
                           />
                         </div>
                         <div className="flex-1">
@@ -862,7 +867,8 @@ export default function ProjectEditor() {
                             isLoading={isUploadingStates[`after_${i}`]}
                             onFileSelect={(e) => handleGenericImageUpload(e, `after_${i}`, (url) => updateArrayItem('transformations', i, { ...pair, after: url }), 'After image updated')}
                             onRemove={() => updateArrayItem('transformations', i, { ...pair, after: null })}
-                            aspectClass="aspect-[3/4] max-w-[200px]"
+                            aspectClass="auto"
+                            objectFit="object-contain"
                           />
                         </div>
                       </div>
@@ -883,7 +889,7 @@ export default function ProjectEditor() {
                     <h3 className="text-sm font-bold uppercase tracking-widest text-[#ceab7a]">Campaign Visuals</h3>
                     <span className="text-xs text-gray-500">{(modalContent.campaignVisuals || []).filter(Boolean).length} Visuals</span>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 items-start">
                     {(modalContent.campaignVisuals || []).map((img: string, i: number) => (
                       <MediaUploadCard
                         key={i}
@@ -903,7 +909,8 @@ export default function ProjectEditor() {
                             'danger'
                           );
                         }}
-                        aspectClass="aspect-[3/4]"
+                        aspectClass="auto"
+                        objectFit="object-contain"
                       />
                     ))}
                   </div>
@@ -1038,7 +1045,7 @@ export default function ProjectEditor() {
                     <h3 className="text-sm font-bold uppercase tracking-widest text-[#ceab7a]">Dashboard Screenshots</h3>
                     <span className="text-xs text-gray-500">{(modalContent.dashboards || []).filter(Boolean).length} Dashboards</span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                      {(modalContent.dashboards || []).map((img: string, i: number) => (
                        <MediaUploadCard
                          key={i}
@@ -1062,7 +1069,7 @@ export default function ProjectEditor() {
                          onMoveRight={() => moveArrayItem('dashboards', i, i + 1)}
                          canMoveLeft={i > 0}
                          canMoveRight={i < (modalContent.dashboards || []).length - 1}
-                         aspectClass="aspect-video"
+                         aspectClass="auto"
                          objectFit="object-contain"
                        />
                      ))}

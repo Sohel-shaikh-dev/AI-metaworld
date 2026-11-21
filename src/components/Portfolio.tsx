@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useCallback } from 'react';
+import { useState, useEffect, memo, useCallback, type SyntheticEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Variants } from 'framer-motion';
@@ -76,6 +76,57 @@ const CATEGORIES = [
 ];
 
 
+const PortfolioGalleryItem = ({ src, alt, delay = 0 }: { src: string; alt?: string; delay?: number }) => {
+  const [dimensions, setDimensions] = useState<{ width: number; height: number; ratio: number } | null>(null);
+
+  const handleImageLoad = (e: SyntheticEvent<HTMLImageElement>) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    if (naturalWidth && naturalHeight) {
+      setDimensions({
+        width: naturalWidth,
+        height: naturalHeight,
+        ratio: naturalWidth / naturalHeight
+      });
+    }
+  };
+
+  const isPortrait = dimensions ? dimensions.ratio < 0.85 : false;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay }}
+      className={`rounded-[20px] overflow-hidden border border-white/10 bg-[#101010] shadow-2xl flex items-center justify-center p-2 break-inside-avoid mb-6 ${
+        isPortrait ? 'max-w-[420px] mx-auto w-full' : 'w-full'
+      }`}
+    >
+      <img
+        onError={(e) => {
+          e.currentTarget.src =
+            'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E';
+          e.currentTarget.onerror = null;
+        }}
+        ref={(imgEl) => {
+          if (imgEl && imgEl.complete && imgEl.naturalWidth && !dimensions) {
+            setDimensions({
+              width: imgEl.naturalWidth,
+              height: imgEl.naturalHeight,
+              ratio: imgEl.naturalWidth / imgEl.naturalHeight
+            });
+          }
+        }}
+        src={src}
+        alt={alt || "Project Screenshot"}
+        onLoad={handleImageLoad}
+        className="w-full h-auto max-h-[85vh] object-contain block rounded-[14px]"
+        loading="lazy"
+      />
+    </motion.div>
+  );
+};
+
 const BrandAssetGallery = ({ assets, title, category, compact = false }: { assets: any[], title?: string, category: string, compact?: boolean }) => {
   if (!assets || assets.length === 0) return null;
 
@@ -105,12 +156,6 @@ const BrandAssetGallery = ({ assets, title, category, compact = false }: { asset
       )}
       <div className={gridClass}>
         {assets.map((asset, i) => {
-           // Decide image fit. Photographic mockups can be cover. Logos/Print are contain.
-           let objectFit = "object-contain";
-           if (category === 'packaging' && asset.type?.toLowerCase().includes('mockup')) {
-               objectFit = "object-cover";
-           }
-
            const isMasonry = assets.length >= 5 && category !== 'icon';
 
            return (
@@ -129,7 +174,7 @@ const BrandAssetGallery = ({ assets, title, category, compact = false }: { asset
                <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
                  src={asset.url || asset}
                  alt={asset.caption || asset.type || category}
-                 className={`w-full ${category === 'icon' ? 'max-w-[80px]' : 'max-h-[80vh]'} ${objectFit} group-hover:scale-[1.02] transition-transform duration-700`}
+                 className={`w-full ${category === 'icon' ? 'max-w-[80px]' : 'max-h-[80vh]'} object-contain`}
                  loading="lazy"
                />
                {(asset.type || asset.caption) && category !== 'icon' && category !== 'logo' && (
@@ -193,7 +238,7 @@ const FashionAssetGallery = ({ assets, title }: { assets: string[], title?: stri
              >
                <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }}
                  src={asset}
-                 className={`w-full max-h-[85vh] object-contain group-hover:scale-[1.02] transition-transform duration-700`}
+                 className="w-full max-h-[85vh] object-contain"
                  loading="lazy"
                />
              </motion.div>
@@ -466,12 +511,17 @@ const Portfolio = memo(function Portfolio() {
             if (screens.length === 0) return null;
 
             return (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-12 border-t border-white/5">
-                {screens.map((img: string, idx: number) => (
-                  <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: idx * 0.2 }} key={idx} className="aspect-video rounded-[20px] overflow-hidden border border-white/10 bg-[#101010] group shadow-2xl">
-                    <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700" />
-                  </motion.div>
-                ))}
+              <div className="pt-12 border-t border-white/5">
+                <div className={screens.length === 1 ? "max-w-4xl mx-auto" : "columns-1 md:columns-2 gap-6 space-y-6"}>
+                  {screens.map((img: string, idx: number) => (
+                    <PortfolioGalleryItem
+                      key={idx}
+                      src={img}
+                      alt={`${project.title} screenshot ${idx + 1}`}
+                      delay={idx * 0.1}
+                    />
+                  ))}
+                </div>
               </div>
             );
           })()}
@@ -692,12 +742,12 @@ const Portfolio = memo(function Portfolio() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       {mc.logos?.map((img: string, i: number) => (
                         <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={`logo-${i}`} className="rounded-2xl overflow-hidden border border-white/5 bg-[#050505] p-6 flex items-center justify-center">
-                          <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="max-w-full max-h-[300px] object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" loading="lazy" />
+                          <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="max-w-full max-h-[300px] object-contain drop-shadow-2xl" loading="lazy" />
                         </motion.div>
                       ))}
                       {mc.mockups?.map((img: string, i: number) => (
-                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1 }} key={`mockup-${i}`} className={`rounded-2xl overflow-hidden border border-white/5 bg-[#101010] group ${i % 3 === 0 ? 'sm:col-span-2' : ''}`}>
-                          <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="w-full h-auto max-h-[600px] object-contain group-hover:scale-[1.03] transition-transform duration-700" loading="lazy" />
+                        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + i * 0.1 }} key={`mockup-${i}`} className={`rounded-2xl overflow-hidden border border-white/5 bg-[#101010] ${i % 3 === 0 ? 'sm:col-span-2' : ''}`}>
+                          <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="w-full h-auto max-h-[600px] object-contain" loading="lazy" />
                         </motion.div>
                       ))}
                     </div>
@@ -768,14 +818,14 @@ const Portfolio = memo(function Portfolio() {
                   <div className={`grid ${mc.transformations.length === 1 ? 'grid-cols-1 max-w-4xl mx-auto' : mc.transformations.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'} gap-8`}>
                     {mc.transformations.map((pair: any, i: number) => (
                       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className="flex flex-col gap-4 bg-white/[0.02] p-4 rounded-3xl border border-white/5">
-                        <div className="flex flex-col sm:flex-row gap-4 h-full">
-                          <div className="flex-1 rounded-2xl overflow-hidden relative bg-[#101010] aspect-[3/4]">
-                            <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={pair.before} className="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-700" loading="lazy" />
-                            <div className="absolute top-4 left-4 px-3 py-1 bg-black/80 backdrop-blur-md rounded-full text-[9px] text-gray-300 uppercase tracking-widest border border-white/10">Before</div>
+                        <div className="flex flex-col sm:flex-row gap-4 h-full items-center justify-center">
+                          <div className="flex-1 w-full rounded-2xl overflow-hidden relative bg-[#101010] min-h-[260px] max-h-[75vh] flex items-center justify-center p-2">
+                            <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={pair.before} className="w-full h-auto max-h-[75vh] object-contain block rounded-xl" loading="lazy" />
+                            <div className="absolute top-4 left-4 px-3 py-1 bg-black/80 backdrop-blur-md rounded-full text-[9px] text-gray-300 uppercase tracking-widest border border-white/10 z-10">Before</div>
                           </div>
-                          <div className="flex-1 rounded-2xl overflow-hidden relative bg-[#101010] border border-[#ceab7a]/30 shadow-[0_0_30px_rgba(206,171,122,0.15)] aspect-[3/4]">
-                            <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={pair.after} className="w-full h-full object-contain hover:scale-[1.02] transition-transform duration-700" loading="lazy" />
-                            <div className="absolute top-4 left-4 px-3 py-1 bg-[#ceab7a] rounded-full text-[9px] text-black font-bold uppercase tracking-widest shadow-lg">After</div>
+                          <div className="flex-1 w-full rounded-2xl overflow-hidden relative bg-[#101010] border border-[#ceab7a]/30 shadow-[0_0_30px_rgba(206,171,122,0.15)] min-h-[260px] max-h-[75vh] flex items-center justify-center p-2">
+                            <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={pair.after} className="w-full h-auto max-h-[75vh] object-contain block rounded-xl" loading="lazy" />
+                            <div className="absolute top-4 left-4 px-3 py-1 bg-[#ceab7a] rounded-full text-[9px] text-black font-bold uppercase tracking-widest shadow-lg z-10">After</div>
                           </div>
                         </div>
                       </motion.div>
@@ -925,8 +975,8 @@ const Portfolio = memo(function Portfolio() {
                   'grid-cols-1 md:grid-cols-2'
                 }`}>
                   {mc.dashboards.map((img: string, i: number) => (
-                    <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className="relative shadow-xl">
-                      <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="block w-full h-auto" style={{ width: "100%", height: "auto", display: "block" }} loading="lazy" />
+                    <motion.div initial={{ opacity: 0, scale: 0.98 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className="relative shadow-xl rounded-2xl overflow-hidden border border-white/10 bg-[#0a0a0a] flex items-center justify-center p-2">
+                      <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="w-full h-auto max-h-[85vh] object-contain block rounded-xl" style={{ display: "block" }} loading="lazy" />
                     </motion.div>
                   ))}
                 </div>
@@ -1036,8 +1086,8 @@ const Portfolio = memo(function Portfolio() {
                     const prodType = isString ? 'Other' : prod.type;
                     return (
                       <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} key={i} className="flex flex-col items-center gap-6 group">
-                        <div className="w-full relative shadow-xl">
-                          <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="block w-full h-auto" loading="lazy" />
+                        <div className="w-full relative shadow-xl rounded-2xl overflow-hidden bg-[#0a0a0a] border border-white/5 p-2 flex items-center justify-center">
+                          <img onError={(e) => { e.currentTarget.src = 'data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22400%22%20height%3D%22300%22%20style%3D%22background%3A%230a0a0a%22%3E%3Ctext%20fill%3D%22%23444%22%20x%3D%2250%25%22%20y%3D%2250%25%22%20font-family%3D%22sans-serif%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%3EImage%20Unavailable%3C%2Ftext%3E%3C%2Fsvg%3E'; e.currentTarget.onerror = null; }} src={img} className="w-full h-auto max-h-[85vh] object-contain block rounded-xl" loading="lazy" />
                         </div>
                         <div className="px-6 py-2 bg-white/5 border border-white/10 rounded-full">
                           <span className="text-[11px] text-[#ceab7a] uppercase tracking-widest font-medium">{prodType}</span>
